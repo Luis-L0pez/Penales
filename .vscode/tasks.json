@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar juego",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "${workspaceFolder}/src/main.cpp",
+                "-I", "${workspaceFolder}/include",
+                "-L", "C:/msys64/mingw64/lib",
+                "-lsfml-graphics",
+                "-lsfml-window",
+                "-lsfml-system",
+                "-o", "${workspaceFolder}/bin/juego.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        }
+    ]
+}
