@@ -37,7 +37,7 @@ int main()
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setScale(1.5f, 1.5f);                        
-    goalSprite.setPosition(window.getSize().x * 0.35f, 500);  // más arriba
+    goalSprite.setPosition(window.getSize().x * 0.35f, 400);  // más arriba
 
     // --------------------------
     // PORTERO — MÁS ARRIBA Y UN POCO MÁS GRANDE
@@ -51,7 +51,7 @@ int main()
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
     keeperSprite.setScale(0.28f, 0.28f);                    
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 600); // más arriba
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 450); // más arriba
 
     // --------------------------
     // JUGADOR — MÁS GRANDE, ABAJO Y A LA DERECHA
@@ -64,7 +64,7 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.2f, 0.2f);  // mucho más grande
+    player.sprite.setScale(1.f, 1.f);  // mucho más grande
     player.sprite.setPosition(
         window.getSize().x * 0.55f,
         window.getSize().y - 200
