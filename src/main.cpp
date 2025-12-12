@@ -1,14 +1,36 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
 #include "Player.h"
-
+#include <iostream>
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Penalti");
+    // --------------------------
+    // VENTANA FULLSCREEN
+    // --------------------------
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Penalti", sf::Style::Fullscreen);
+    window.setFramerateLimit(60);
 
     // --------------------------
-    // CARGAR PORTERÍA
+    // FONDO (ESTADIO)
+    // --------------------------
+    sf::Texture stadiumTexture;
+    if (!stadiumTexture.loadFromFile("assets/estadio.png"))
+    {
+        std::cout << "Error cargando assets/estadio.png\n";
+        return 1;
+    }
+
+    sf::Sprite stadiumSprite;
+    stadiumSprite.setTexture(stadiumTexture);
+    stadiumSprite.setScale(
+        float(window.getSize().x) / stadiumTexture.getSize().x,
+        float(window.getSize().y) / stadiumTexture.getSize().y
+    );
+
+    // --------------------------
+    // PORTERÍA
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -16,17 +38,15 @@ int main()
         std::cout << "Error cargando assets/arco.png\n";
         return 1;
     }
+
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
 
-    // Portería más pequeña, a la derecha y MÁS ABAJO
-    goalSprite.setScale(0.35f, 0.35f);
-    goalSprite.setPosition(window.getSize().x * 0.60f, 140);  
-    // ← aquí la bajé (antes estaba en 40)
-
+    goalSprite.setScale(0.55f, 0.55f);  // un poquito más grande
+    goalSprite.setPosition(window.getSize().x * 0.60f, 80); // MÁS DERECHA y un poco abajo
 
     // --------------------------
-    // CARGAR PORTERO
+    // PORTERO
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -34,19 +54,17 @@ int main()
         std::cout << "Error cargando assets/keeper.png\n";
         return 1;
     }
+
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-
-    // Portero más grande y más abajo
-    keeperSprite.setScale(0.10f, 0.10f);
-    keeperSprite.setPosition(window.getSize().x * 0.62f, 340);
-    // ← bajé un poco más el portero para que siga centrado con la portería
-
+    keeperSprite.setScale(0.06f, 0.06f);
+    keeperSprite.setPosition(window.getSize().x * 0.63f, 170); // un poco más arriba
 
     // --------------------------
-    // CARGAR JUGADOR
+    // JUGADOR
     // --------------------------
     Player player("Luis");
+
     sf::Texture playerTexture;
     if (!playerTexture.loadFromFile("assets/player.png"))
     {
@@ -55,31 +73,11 @@ int main()
     }
 
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.09f, 0.09f);
-
-    // Jugador más adelante
-    player.sprite.setPosition(window.getSize().x * 0.50f, window.getSize().y - 260);
-
+    player.sprite.setScale(0.08f, 0.08f);
+    player.sprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 250);
 
     // --------------------------
-    // CARGAR BALÓN
-    // --------------------------
-    sf::Texture ballTexture;
-    if (!ballTexture.loadFromFile("assets/ball.png"))
-    {
-        std::cout << "Error cargando assets/ball.png\n";
-        return 1;
-    }
-    sf::Sprite ballSprite;
-    ballSprite.setTexture(ballTexture);
-
-    // Pelota un poquito más grande
-    ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(window.getSize().x * 0.505f, window.getSize().y - 300);
-
-
-    // --------------------------
-    // LOOP PRINCIPAL
+    // LOOP
     // --------------------------
     while (window.isOpen())
     {
@@ -90,13 +88,19 @@ int main()
                 window.close();
         }
 
-        window.clear(sf::Color::Green);
+        float dt = 1.f / 60.f;
 
+        // Movimiento del jugador
+        player.moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+        player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+        player.update(dt);
+
+        // Dibujar
+        window.clear();
+        window.draw(stadiumSprite);
         window.draw(goalSprite);
         window.draw(keeperSprite);
         window.draw(player.sprite);
-        window.draw(ballSprite);
-
         window.display();
     }
 
