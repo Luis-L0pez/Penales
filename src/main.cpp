@@ -28,11 +28,8 @@ int main() {
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png")) return 1;
     sf::Sprite goalSprite(goalTexture);
-    goalSprite.setScale(
-        450.f / goalTexture.getSize().x,
-        160.f / goalTexture.getSize().y
-    );
-    goalSprite.setPosition(175.f, 330.f); // más abajo que antes
+    goalSprite.setScale(450.f / goalTexture.getSize().x, 160.f / goalTexture.getSize().y);
+    goalSprite.setPosition(175.f, 350.f); // más abajo
 
     sf::FloatRect goalArea(
         goalSprite.getPosition().x,
@@ -46,7 +43,10 @@ int main() {
     Player player2("Jugador2");
     Player* currentPlayer = &player1;
     player1.sprite.setPosition(400.f, 500.f);
-    player2.sprite.setPosition(400.f, 500.f); // fuera de pantalla, solo para turnos
+    player2.sprite.setPosition(400.f, 500.f); // fuera de pantalla
+
+    player1.sprite.setScale(0.35f, 0.35f); // más pequeño
+    player2.sprite.setScale(0.35f, 0.35f); // más pequeño
 
     // ------------------ Balón ------------------
     Ball ball;
@@ -67,10 +67,10 @@ int main() {
 
     // ------------------ Portero ------------------
     Keeper keeper;
-    keeper.sprite.setScale(0.15f, 0.15f); // muy pequeño
+    keeper.sprite.setScale(0.12f, 0.12f); // un poquito más pequeño
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width/2 - keeper.sprite.getGlobalBounds().width/2,
-        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 10.f // un poco más abajo
+        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 10.f
     );
     keeper.speed = 120.f;
 
@@ -136,7 +136,7 @@ int main() {
         currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         currentPlayer->update(dt);
 
-        // Elegir dirección de tiro
+        // Solo se puede disparar si el balón no se está moviendo
         if (!ballMoving) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
                 shootDirection = sf::Vector2f(-300.f, -500.f);
@@ -148,7 +148,7 @@ int main() {
             if (shootDirection != sf::Vector2f(0.f,0.f)) {
                 ballMoving = true;
                 ball.shoot(shootDirection, 500.f);
-                currentPower = randomPower();
+                currentPower = randomPower(); // genera power-up al disparar
             }
         }
 
@@ -210,3 +210,4 @@ int main() {
 
     return 0;
 }
+
