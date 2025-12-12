@@ -26,7 +26,7 @@ int main()
     );
 
     // --------------------------
-    // PORTERÍA
+    // PORTERÍA — MÁS GRANDE + MÁS ABAJO
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -36,11 +36,11 @@ int main()
     }
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
-    goalSprite.setScale(1.5f, 1.5f);
-    goalSprite.setPosition(window.getSize().x * 0.35f, 620);  // un poco más abajo
+    goalSprite.setScale(1.5f, 1.5f);                        
+    goalSprite.setPosition(window.getSize().x * 0.35f, 700);  // MÁS ABAJO
 
     // --------------------------
-    // PORTERO
+    // PORTERO — MÁS GRANDE + MÁS ABAJO + UN POCO A LA DERECHA
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -50,11 +50,11 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.25f, 0.25f);
-    keeperSprite.setPosition(window.getSize().x * 0.46f, 700); // un poco más a la derecha
+    keeperSprite.setScale(0.28f, 0.28f);  // un poquito más grande
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 780); // más abajo y un poco a la derecha
 
     // --------------------------
-    // JUGADOR
+    // JUGADOR — MÁS GRANDE + MÁS ABAJO + MÁS A LA DERECHA
     // --------------------------
     Player player("Luis");
     sf::Texture playerTexture;
@@ -64,11 +64,8 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.15f, 0.15f);  // MÁS GRANDE
-    player.sprite.setPosition(
-        window.getSize().x * 0.50f,         // MÁS A LA DERECHA
-        window.getSize().y - 250            // MÁS ABAJO
-    );
+    player.sprite.setScale(0.14f, 0.14f);  // más grande
+    player.sprite.setPosition(window.getSize().x * 0.50f, window.getSize().y - 250);
 
     // --------------------------
     // BALÓN
@@ -81,11 +78,8 @@ int main()
     }
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
-    ballSprite.setScale(0.05f, 0.05f);  // ajusta a tamaño real
-    ballSprite.setPosition(
-        window.getSize().x * 0.52f,
-        window.getSize().y - 280
-    );
+    ballSprite.setScale(0.05f, 0.05f);
+    ballSprite.setPosition(window.getSize().x * 0.55f, window.getSize().y - 250);
 
     sf::Vector2f ballVelocity(0.f, 0.f);
 
@@ -106,49 +100,19 @@ int main()
         player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         player.update(dt);
 
-        // Ejemplo de mover el balón con espacio (opcional)
+        // Mover balón al presionar espacio
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        {
-            ballVelocity = sf::Vector2f(0.f, -10.f);
-        }
+            ballVelocity = sf::Vector2f(0.f, -12.f);
+
         ballSprite.move(ballVelocity);
 
-        // Dibujar
+        // Dibujar todo
         window.clear();
         window.draw(stadiumSprite);
         window.draw(goalSprite);
         window.draw(keeperSprite);
         window.draw(player.sprite);
         window.draw(ballSprite);
-        window.display();
-    }
-
-    return 0;
-}
-
-
-    // --------------------------
-    // LOOP PRINCIPAL
-    // --------------------------
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-            if (event.type == sf::Event::Closed)
-                window.close();
-
-        float dt = 1.f / 60.f;
-
-        player.moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
-        player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
-        player.update(dt);
-
-        window.clear();
-        window.draw(stadiumSprite);
-        window.draw(goalSprite);
-        window.draw(keeperSprite);
-        window.draw(player.sprite);
-        
         window.display();
     }
 
