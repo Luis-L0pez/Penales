@@ -9,20 +9,22 @@ Ball::Ball() {
     }
 
     sprite.setTexture(texture);
-    sprite.setScale(0.05f, 0.05f);
+
+    // 🔧 BALÓN MÁS PEQUEÑO
+    sprite.setScale(0.035f, 0.035f);
+
     velocity = sf::Vector2f(0.f, 0.f);
 }
 
 void Ball::shoot(sf::Vector2f direction, float baseSpeed) {
-    float length = std::sqrt(direction.x * direction.x +
-                             direction.y * direction.y);
-
-    if (length != 0.f)
-        direction /= length;
-
-    velocity = direction * baseSpeed;
+    velocity = direction;
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    if (length != 0)
+        velocity /= length;
+    velocity *= baseSpeed;
 }
 
 void Ball::update(float dt) {
     sprite.move(velocity * dt);
+    sprite.rotate(360.f * dt); // 🔥 
 }

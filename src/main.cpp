@@ -28,9 +28,7 @@ int main() {
     goalTexture.loadFromFile("assets/arco.png");
     sf::Sprite goal(goalTexture);
     goal.setScale(500.f / goalTexture.getSize().x, 180.f / goalTexture.getSize().y);
-
-    // 🔧 SUBIDA
-    goal.setPosition(150.f, 300.f);
+    goal.setPosition(150.f, 300.f); // 🔧 más arriba
     sf::FloatRect goalArea = goal.getGlobalBounds();
 
     // ---------- JUGADORES ----------
@@ -40,7 +38,6 @@ int main() {
     p1.sprite.setPosition(400.f, 500.f);
     p2.sprite.setPosition(400.f, 500.f);
 
-    // 🔧 MÁS GRANDES
     p1.sprite.setScale(0.22f, 0.22f);
     p2.sprite.setScale(0.22f, 0.22f);
 
@@ -67,10 +64,10 @@ int main() {
     Keeper keeper;
     keeper.sprite.setScale(0.12f, 0.12f);
 
-    // 🔧 SUBIDO JUNTO CON PORTERÍA
+    // 🔧 portero un poco más abajo
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width / 2 - keeper.sprite.getGlobalBounds().width / 2,
-        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height - 20.f
+        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 5.f
     );
 
     keeper.speed = 120.f;
@@ -134,9 +131,8 @@ int main() {
         window.clear();
         window.draw(stadium);
 
-        if (state == MENU) {
+        if (state == MENU)
             window.draw(menuText);
-        }
 
         if (state == PLAYING) {
 
@@ -148,8 +144,8 @@ int main() {
                 ball.update(dt);
 
                 keeperTimer += dt;
-                if (keeperTimer > 0.15f) {
-                    keeper.sprite.move((std::rand() % 3 - 1) * keeper.speed * dt * 3.f, 0);
+                if (keeperTimer > 0.5f) {
+                   keeper.sprite.move((std::rand() % 3 - 1) * keeper.speed * dt * 6.f, 0);
                     keeperTimer = 0.f;
                 }
             }
@@ -158,7 +154,6 @@ int main() {
             bool hitKeeper  = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
             bool out        = ball.sprite.getPosition().y < 0;
 
-            // 🔥 SOLO SI HUBO DISPARO
             if (ballMoving && (goalScored || hitKeeper || out)) {
 
                 if (goalScored && !hitKeeper) {
