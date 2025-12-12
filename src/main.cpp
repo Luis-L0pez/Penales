@@ -15,12 +15,12 @@ int main()
     std::srand(std::time(nullptr)); // Para random del portero
 
     // --------------------------
-    // ESTADIO (NO TOCAR)
+    // ESTADIO
     // --------------------------
     sf::Texture stadiumTexture;
-    if (!stadiumTexture.loadFromFile("Assets/estadio.png"))
+    if (!stadiumTexture.loadFromFile("assets/estadio.png"))
     {
-        std::cout << "Error cargando Assets/estadio.png\n";
+        std::cout << "Error cargando assets/estadio.png\n";
         return 1;
     }
     sf::Sprite stadiumSprite;
@@ -34,38 +34,38 @@ int main()
     // PORTERÍA
     // --------------------------
     sf::Texture goalTexture;
-    if (!goalTexture.loadFromFile("Assets/arco.png"))
+    if (!goalTexture.loadFromFile("assets/arco.png"))
     {
-        std::cout << "Error cargando Assets/arco.png\n";
+        std::cout << "Error cargando assets/arco.png\n";
         return 1;
     }
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setScale(1.5f, 1.5f);
-    goalSprite.setPosition(window.getSize().x * 0.35f, 610);
+    goalSprite.setPosition(window.getSize().x * 0.35f, 620);
 
     // --------------------------
     // PORTERO
     // --------------------------
     sf::Texture keeperTexture;
-    if (!keeperTexture.loadFromFile("Assets/keeper.png"))
+    if (!keeperTexture.loadFromFile("assets/keeper.png"))
     {
-        std::cout << "Error cargando Assets/keeper.png\n";
+        std::cout << "Error cargando assets/keeper.png\n";
         return 1;
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
     keeperSprite.setScale(0.28f, 0.28f);
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 660);
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 670);
 
     // --------------------------
     // JUGADOR
     // --------------------------
     Player player("Luis");
     sf::Texture playerTexture;
-    if (!playerTexture.loadFromFile("Assets/player.png"))
+    if (!playerTexture.loadFromFile("assets/player.png"))
     {
-        std::cout << "Error cargando Assets/player.png\n";
+        std::cout << "Error cargando assets/player.png\n";
         return 1;
     }
     player.sprite.setTexture(playerTexture);
@@ -76,40 +76,45 @@ int main()
     // BALÓN
     // --------------------------
     sf::Texture ballTexture;
-    if (!ballTexture.loadFromFile("Assets/ball.png"))
+    if (!ballTexture.loadFromFile("assets/ball.png"))
     {
-        std::cout << "Error cargando Assets/ball.png\n";
+        std::cout << "Error cargando assets/ball.png\n";
         return 1;
     }
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 180); // Desde los pies
+    ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 120);
 
     sf::Vector2f ballVelocity(0.f, 0.f);
+    bool ballMoving = false;
+    sf::Vector2f shootDirection;
 
     // --------------------------
     // MARCADOR
     // --------------------------
     sf::Font font;
-    if (!font.loadFromFile("Assets/fonts/arial.ttf")) {
+    if (!font.loadFromFile("assets/fonts/arial.ttf"))
+    {
         std::cout << "Error cargando fuente arial.ttf\n";
         return 1;
     }
 
     int scorePlayer1 = 0;
     int scorePlayer2 = 0;
-    int currentPlayer = 1; // 1 o 2
+    int currentPlayer = 1;
+
+    sf::RectangleShape scoreBackground;
+    scoreBackground.setSize(sf::Vector2f(300.f, 70.f));
+    scoreBackground.setFillColor(sf::Color(0, 0, 0, 180));
+    scoreBackground.setPosition(window.getSize().x - 320.f, 20.f);
 
     sf::Text scoreText;
     scoreText.setFont(font);
-    scoreText.setCharacterSize(50);
+    scoreText.setCharacterSize(30);
     scoreText.setFillColor(sf::Color::White);
-    scoreText.setPosition(window.getSize().x - 250, 20);
-    scoreText.setString("P1: 0  P2: 0");
-
-    bool ballMoving = false;
-    sf::Vector2f shootDirection;
+    scoreText.setPosition(window.getSize().x - 300.f, 35.f);
+    scoreText.setString("P1: 0  |  P2: 0");
 
     // --------------------------
     // LOOP PRINCIPAL
@@ -151,10 +156,10 @@ int main()
 
             if (ballMoving)
             {
-                // Posicionar el balón en los pies del jugador
-                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 180);
+                // Posicionar balón en pies del jugador
+                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 120);
 
-                // Portero aleatorio dentro de la portería
+                // Portero aleatorio solo una vez
                 float keeperX = goalSprite.getPosition().x + std::rand() % int(goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width);
                 keeperSprite.setPosition(keeperX, keeperSprite.getPosition().y);
             }
@@ -164,6 +169,15 @@ int main()
         if (ballMoving)
         {
             ballSprite.move(shootDirection);
+
+            // Limitar dentro de la pantalla
+            if (ballSprite.getPosition().y < 0 || ballSprite.getPosition().y > window.getSize().y ||
+                ballSprite.getPosition().x < 0 || ballSprite.getPosition().x > window.getSize().x)
+            {
+                ballMoving = false;
+                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 120);
+                player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 300);
+            }
         }
 
         // Detección de gol
@@ -171,7 +185,6 @@ int main()
         {
             if (ballSprite.getGlobalBounds().intersects(goalSprite.getGlobalBounds()))
             {
-                // Verificar si el portero la tapa
                 if (ballSprite.getGlobalBounds().intersects(keeperSprite.getGlobalBounds()))
                 {
                     std::cout << "¡Portero la tapó!\n";
@@ -181,14 +194,13 @@ int main()
                     std::cout << "¡Gol del jugador " << currentPlayer << "!\n";
                     if (currentPlayer == 1) scorePlayer1++;
                     else scorePlayer2++;
-
-                    scoreText.setString("P1: " + std::to_string(scorePlayer1) + "  P2: " + std::to_string(scorePlayer2));
+                    scoreText.setString("P1: " + std::to_string(scorePlayer1) + "  |  P2: " + std::to_string(scorePlayer2));
                 }
 
-                // Reset para el siguiente jugador
+                // Reset para siguiente jugador
                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
                 ballMoving = false;
-                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 180);
+                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 120);
                 player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 300);
             }
         }
@@ -207,6 +219,7 @@ int main()
         window.draw(keeperSprite);
         window.draw(player.sprite);
         window.draw(ballSprite);
+        window.draw(scoreBackground);
         window.draw(scoreText);
         window.display();
     }
