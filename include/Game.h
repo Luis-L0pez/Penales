@@ -1,6 +1,5 @@
 
 #pragma once 
-#define GAME_H
 
 #include <vector>
 #include <string>
@@ -29,4 +28,4 @@ private:
     bool running;
 };
 
-#endif
+

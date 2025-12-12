@@ -3,18 +3,12 @@
 
 struct Ball {
     sf::Sprite sprite;
-    sf::Vector2f velocity = {0.f, 0.f};
-    bool isMoving = false;
-    float speed = 300.f; // <-- Agregado
+    sf::Vector2f velocity;
+    float speed = 500.f;
 
+    Ball();  // Constructor
+    void shoot(sf::Vector2f dir, float spd);
     void update(float dt);
-    void shoot(const sf::Vector2f& direction, float speed);
+
     sf::FloatRect getBounds() const;
-
-    // Power-ups (opcional si los quieres)
-    bool speedBoost = false;
-    float boostMultiplier = 1.5f;
-
-    void activateSpeedBoost(float multiplier = 1.5f);
-    void deactivatePowerUps();
 };
