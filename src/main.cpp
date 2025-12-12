@@ -58,9 +58,9 @@ int main()
     // --------------------------
     Player player("Luis");
     sf::Texture playerTexture;
-    if (!playerTexture.loadFromFile("assets/player.png"))
+    if (!playerTexture.loadFromFile("assets/player.jpeg"))
     {
-        std::cout << "Error cargando assets/player.png\n";
+        std::cout << "Error cargando assets/player.jpeg\n";
         return 1;
     }
     player.sprite.setTexture(playerTexture);
