@@ -8,7 +8,6 @@
 #include "Player.h"
 #include "Ball.h"
 #include "Keeper.h"
-// Removido: #include "Power.h" (no se usa)
 
 enum GameState { MENU, PLAYING, WIN };
 
@@ -138,14 +137,24 @@ int main() {
                 window.close();
             if (state == MENU && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
                 state = PLAYING;
-            if (state == WIN && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-                // Reiniciar juego
-                scorePlayer1 = 0;
-                scorePlayer2 = 0;
-                player1Turn = true;
-                currentPlayer = &player1;
-                resetBall();
-                state = PLAYING;
+            if (state == WIN) {
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                    // Reiniciar juego
+                    scorePlayer1 = 0;
+                    scorePlayer2 = 0;
+                    player1Turn = true;
+                    currentPlayer = &player1;
+                    resetBall();
+                    state = PLAYING;
+                } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+                    window.close();  // Salir del juego
+                }
+            }
+            // Disparo solo en PLAYING, basado en evento (no sostenido)
+            if (state == PLAYING && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space && !ballMoving) {
+                shootDirection = sf::Vector2f(0.f, -500.f);
+                ballMoving = true;
+                ball.shoot(shootDirection, 500.f);
             }
         }
 
@@ -161,13 +170,6 @@ int main() {
             currentPlayer->moveLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
             currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
             currentPlayer->update(dt);
-
-            // ---------------- DISPARO ----------------
-            if (!ballMoving && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-                shootDirection = sf::Vector2f(0.f, -500.f);
-                ballMoving = true;
-                ball.shoot(shootDirection, 500.f);
-            }
 
             // ---------------- ACTUALIZAR BALÓN ----------------
             if (ballMoving) {
@@ -213,14 +215,14 @@ int main() {
                 // Verificar si alguien ganó (primero a 5, desempatar si empate)
                 if (scorePlayer1 >= 5 || scorePlayer2 >= 5) {
                     if (scorePlayer1 > scorePlayer2) {
-                        winText.setString("¡Jugador 1 GANA!");
+                        winText.setString("¡Jugador 1 GANA!\nPresiona ENTER para reiniciar o ESC para salir");
                         winText.setPosition(
                             window.getSize().x / 2 - winText.getGlobalBounds().width / 2,
                             window.getSize().y / 2 - winText.getGlobalBounds().height / 2
                         );
                         state = WIN;
                     } else if (scorePlayer2 > scorePlayer1) {
-                        winText.setString("¡Jugador 2 GANA!");
+                        winText.setString("¡Jugador 2 GANA!\nPresiona ENTER para reiniciar o ESC para salir");
                         winText.setPosition(
                             window.getSize().x / 2 - winText.getGlobalBounds().width / 2,
                             window.getSize().y / 2 - winText.getGlobalBounds().height / 2
