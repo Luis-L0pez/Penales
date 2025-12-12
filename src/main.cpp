@@ -95,6 +95,7 @@ player.sprite.setPosition(
         window.draw(goalSprite);
         window.draw(keeperSprite);
         window.draw(player.sprite);
+        
         window.display();
     }
 
