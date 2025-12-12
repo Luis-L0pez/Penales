@@ -4,14 +4,10 @@
 class Ball {
 public:
     sf::Sprite sprite;
-    float speed = 400.f;
+    sf::Texture texture;     // ✅ LA TEXTURA DEBE VIVIR AQUÍ
+    sf::Vector2f velocity;
 
     Ball();
     void shoot(sf::Vector2f direction, float baseSpeed);
     void update(float dt);
-    void activateSpeedBoost(float factor);
-    void deactivatePowerUps();
-
-private:
-    sf::Vector2f velocity;
 };

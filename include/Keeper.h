@@ -4,8 +4,8 @@
 class Keeper {
 public:
     sf::Sprite sprite;
-    float speed;
+    sf::Texture texture;   // ✅ LA TEXTURA VIVE AQUÍ
+    float speed = 120.f;
 
     Keeper();
-    void update(float dt);
 };

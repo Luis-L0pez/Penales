@@ -1,16 +1,12 @@
-#ifndef BACKGROUND_H
-#define BACKGROUND_H
-
+#pragma once
 #include <SFML/Graphics.hpp>
 
 class Background {
 public:
-    Background();
+    Background(const sf::Vector2u& windowSize);
     void draw(sf::RenderWindow& window);
 
 private:
     sf::Texture texture;
     sf::Sprite sprite;
 };
-
-#endif

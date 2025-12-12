@@ -3,34 +3,26 @@
 #include <cmath>
 
 Ball::Ball() {
-    static sf::Texture texture;
     if (!texture.loadFromFile("assets/ball.png")) {
-        std::cerr << "Error: No se pudo cargar assets/ball.png. Saliendo...\n";
-        exit(-1);
+        std::cerr << "Error: No se pudo cargar assets/ball.png\n";
+        std::exit(EXIT_FAILURE);
     }
+
     sprite.setTexture(texture);
     sprite.setScale(0.05f, 0.05f);
     velocity = sf::Vector2f(0.f, 0.f);
 }
 
 void Ball::shoot(sf::Vector2f direction, float baseSpeed) {
-    velocity = direction;
-    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    if (length != 0)
-        velocity /= length;
-    velocity *= baseSpeed;
+    float length = std::sqrt(direction.x * direction.x +
+                             direction.y * direction.y);
+
+    if (length != 0.f)
+        direction /= length;
+
+    velocity = direction * baseSpeed;
 }
 
 void Ball::update(float dt) {
     sprite.move(velocity * dt);
 }
-
-void Ball::activateSpeedBoost(float factor) {
-    velocity *= factor;
-}
-
-void Ball::deactivatePowerUps() {
-    // Vacío por ahora
-}
-
-
