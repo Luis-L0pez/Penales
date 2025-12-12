@@ -6,9 +6,14 @@ struct Ball {
     sf::Vector2f velocity;
     float speed = 500.f;
 
-    Ball();  // Constructor
-    void shoot(sf::Vector2f dir, float spd);
+    // Constructor
+    Ball();
+
+    // Movimiento y actualización
+    void shoot(const sf::Vector2f& direction, float s);
     void update(float dt);
 
-    sf::FloatRect getBounds() const;
+    // Métodos para power-ups
+    void activateSpeedBoost(float multiplier);
+    void deactivatePowerUps();
 };
