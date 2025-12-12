@@ -64,11 +64,15 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.065f, 0.065f);
-    player.sprite.setPosition(
-        window.getSize().x * 0.45f,
-        window.getSize().y - 230
-    );
+   // Escala un poco más grande para que se vea bien
+player.sprite.setScale(0.12f, 0.12f);
+
+// Posición un poco más arriba para que quede visible
+player.sprite.setPosition(
+    window.getSize().x * 0.45f,
+    window.getSize().y - 280
+);
+
 
     // --------------------------
     // LOOP PRINCIPAL
