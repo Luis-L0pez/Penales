@@ -146,12 +146,22 @@ int main() {
             bool goalScored = goalArea.contains(ball.sprite.getPosition());
             bool hitKeeper = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
             bool out = ball.sprite.getPosition().y < 0;
+           if (goalScored || hitKeeper || out) {
 
-            if (goalScored || hitKeeper || out) {
-                if (goalScored && !hitKeeper) {
-                    if (player1Turn) score1++;
-                    else score2++;
-                }
+    if (goalScored && !hitKeeper) {
+        if (player1Turn) score1++;
+        else score2++;
+    }
+
+    // CAMBIO DE TURNO
+    player1Turn = !player1Turn;
+    currentPlayer = player1Turn ? &p1 : &p2;
+
+    // 🔥 RESET CORRECTO
+    ballMoving = false;
+    spacePressed = false;
+    resetBall();
+}
 
                 if ((score1 >= 5 || score2 >= 5) && score1 != score2) {
                     winText.setString(score1 > score2 ? "¡Jugador 1 GANA!" : "¡Jugador 2 GANA!");
