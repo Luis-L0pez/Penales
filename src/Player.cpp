@@ -1,16 +1,14 @@
-#include "../include/Player.h"
-#include "../include/Ball.h"
-#include "../include/Power.h"
-#include <cstdio>
+#include "Player.h"
+#include "ball.h"
+#include <iostream>
 
 Player::Player(const std::string &name) {
     speed = 220.f;
-    currentPower.type = PowerType::NONE;
-    currentPower.active = false;
 
     static sf::Texture texture;
     if (!texture.loadFromFile("assets/player.png")) {
-        printf("No se pudo cargar player.png\n");
+        std::cerr << "Error: No se pudo cargar assets/player.png. Saliendo...\n";
+        exit(-1);
     }
     sprite.setTexture(texture);
     sprite.setScale(0.5f, 0.5f);
@@ -25,9 +23,11 @@ void Player::update(float dt) {
     sprite.move(movement * dt, 0.f);
 
     sf::Vector2f pos = sprite.getPosition();
-    if (pos.x < 0.f) sprite.setPosition(0.f, pos.y);
-    if (pos.x > 800.f - sprite.getGlobalBounds().width)
-        sprite.setPosition(800.f - sprite.getGlobalBounds().width, pos.y);
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+    if (bounds.width > 0.f) {
+        if (pos.x < 0.f) sprite.setPosition(0.f, pos.y);
+        if (pos.x > 800.f - bounds.width) sprite.setPosition(800.f - bounds.width, pos.y);
+    }
 }
 
 sf::FloatRect Player::getBounds() const {
@@ -36,15 +36,6 @@ sf::FloatRect Player::getBounds() const {
 
 void Player::kickBall(Ball &ball) {
     sf::Vector2f direction(0.f, -1.f);
-    float baseSpeed = ball.speed;
-
-    if (currentPower.type == PowerType::SPEED_BOOST)
-        ball.activateSpeedBoost(1.5f);
-    else
-        ball.deactivatePowerUps();
-
+    float baseSpeed = 500.f;
     ball.shoot(direction, baseSpeed);
-
-    currentPower.type = PowerType::NONE;
-    currentPower.active = false;
 }

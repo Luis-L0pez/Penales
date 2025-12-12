@@ -1,6 +1,5 @@
-#include "../include/Keeper.h"
-#include <cstdio>
-#include <SFML/Graphics.hpp>
+#include "Keeper.h"  // Cambié a include relativo
+#include <iostream>  // Para std::cerr
 
 static sf::Texture keeperTexture;
 
@@ -10,14 +9,15 @@ Keeper::Keeper() {
     static bool loaded = false;
     if (!loaded) {
         if (!keeperTexture.loadFromFile("assets/keeper.png")) {
-            printf("No se pudo cargar keeper.png\n");
+            std::cerr << "Error: No se pudo cargar assets/keeper.png. Saliendo...\n";
+            exit(-1);  // Salir para evitar crash
         }
         loaded = true;
     }
 
     sprite.setTexture(keeperTexture);
     sprite.setScale(0.28f, 0.28f);
-    sprite.setPosition(400.f, 150.f);
+    sprite.setPosition(400.f, 150.f);  // Esto se sobrescribe en main.cpp, pero está bien
 }
 
 void Keeper::update(float dt) {

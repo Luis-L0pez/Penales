@@ -3,7 +3,7 @@
 #include <SFML/System.hpp>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>  // Para mensajes de error en consola
+#include <iostream>  // Para std::cerr
 
 #include "Player.h"
 #include "Ball.h"
@@ -20,7 +20,7 @@ int main() {
     sf::Texture stadiumTexture;
     if (!stadiumTexture.loadFromFile("assets/estadio.png")) {
         std::cerr << "Error: No se pudo cargar assets/estadio.png\n";
-        return -1;  // Salir para evitar crash
+        return -1;
     }
     sf::Sprite stadiumSprite(stadiumTexture);
     stadiumSprite.setScale(
@@ -38,11 +38,18 @@ int main() {
     goalSprite.setScale(500.f / goalTexture.getSize().x, 180.f / goalTexture.getSize().y);
     goalSprite.setPosition(150.f, 350.f);
 
-    sf::FloatRect goalArea = goalSprite.getGlobalBounds();  // Usar getGlobalBounds() directamente
+    sf::FloatRect goalArea = goalSprite.getGlobalBounds();
 
     // ------------------ Jugadores ------------------
     Player player1("Jugador1");
     Player player2("Jugador2");
+
+    // Verificación de texturas de jugadores
+    if (player1.sprite.getTexture() == nullptr || player2.sprite.getTexture() == nullptr) {
+        std::cerr << "Error: Texturas de jugadores no cargadas.\n";
+        return -1;
+    }
+
     Player* currentPlayer = &player1;
 
     player1.sprite.setPosition(400.f, 500.f);
@@ -55,6 +62,13 @@ int main() {
 
     // ------------------ Balón ------------------
     Ball ball;
+
+    // Verificación de textura del balón
+    if (ball.sprite.getTexture() == nullptr) {
+        std::cerr << "Error: Textura del balón no cargada.\n";
+        return -1;
+    }
+
     sf::Vector2f shootDirection(0.f, 0.f);
     bool ballMoving = false;
 
@@ -74,6 +88,13 @@ int main() {
 
     // ------------------ Portero ------------------
     Keeper keeper;
+
+    // Verificación de textura del keeper
+    if (keeper.sprite.getTexture() == nullptr) {
+        std::cerr << "Error: Textura del keeper no cargada.\n";
+        return -1;
+    }
+
     keeper.sprite.setScale(0.12f, 0.12f);
 
     keeper.sprite.setPosition(
@@ -139,7 +160,6 @@ int main() {
                 state = PLAYING;
             if (state == WIN) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-                    // Reiniciar juego
                     scorePlayer1 = 0;
                     scorePlayer2 = 0;
                     player1Turn = true;
@@ -147,10 +167,9 @@ int main() {
                     resetBall();
                     state = PLAYING;
                 } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-                    window.close();  // Salir del juego
+                    window.close();
                 }
             }
-            // Disparo solo en PLAYING, basado en evento (no sostenido)
             if (state == PLAYING && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space && !ballMoving) {
                 shootDirection = sf::Vector2f(0.f, -500.f);
                 ballMoving = true;
@@ -166,23 +185,19 @@ int main() {
         if (state == MENU) {
             window.draw(menuText);
         } else if (state == PLAYING) {
-            // ---------------- MOVIMIENTO JUGADOR ----------------
             currentPlayer->moveLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
             currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
             currentPlayer->update(dt);
 
-            // ---------------- ACTUALIZAR BALÓN ----------------
             if (ballMoving) {
                 ball.update(dt);
 
-                // Movimiento aleatorio del portero
                 keeperTimer += dt;
                 if (keeperTimer >= 0.15f) {
                     float dir = (std::rand() % 3 - 1) * keeper.speed * dt * 3.f;
                     keeper.sprite.move(dir, 0.f);
                     keeperTimer = 0;
 
-                    // Límites del keeper
                     float L = goalArea.left;
                     float R = goalArea.left + goalArea.width - keeper.sprite.getGlobalBounds().width;
 
@@ -191,28 +206,24 @@ int main() {
                 }
             }
 
-            // ---------------- GOLES / COLISION ----------------
-            sf::FloatRect ballBounds = ball.sprite.getGlobalBounds();
-            bool goalScored = ballBounds.intersects(goalArea);  // Corrección: usar intersects para detección precisa
-            bool hitKeeper = ballBounds.intersects(keeper.sprite.getGlobalBounds());
-            bool outTop = ball.sprite.getPosition().y + ballBounds.height < 0;
-            bool outLeft = ball.sprite.getPosition().x + ballBounds.width < 0;
+            bool goalScored = ball.sprite.getGlobalBounds().intersects(goalArea);
+            bool hitKeeper = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
+            bool outTop = ball.sprite.getPosition().y + ball.sprite.getGlobalBounds().height < 0;
+            bool outLeft = ball.sprite.getPosition().x + ball.sprite.getGlobalBounds().width < 0;
             bool outRight = ball.sprite.getPosition().x > window.getSize().x;
             bool outBottom = ball.sprite.getPosition().y > window.getSize().y;
 
             if (goalScored || hitKeeper || outTop || outLeft || outRight || outBottom) {
-                if (goalScored && !hitKeeper) {  // Solo contar gol si intersecta la portería y no choca con keeper
+                if (goalScored && !hitKeeper) {
                     if (player1Turn) scorePlayer1++;
                     else scorePlayer2++;
                 }
 
-                // Cambiar turno
                 player1Turn = !player1Turn;
                 currentPlayer = player1Turn ? &player1 : &player2;
 
                 resetBall();
 
-                // Verificar si alguien ganó (primero a 5, desempatar si empate)
                 if (scorePlayer1 >= 5 || scorePlayer2 >= 5) {
                     if (scorePlayer1 > scorePlayer2) {
                         winText.setString("¡Jugador 1 GANA!\nPresiona ENTER para reiniciar o ESC para salir");
@@ -229,17 +240,14 @@ int main() {
                         );
                         state = WIN;
                     }
-                    // Si empatan, continúa el juego
                 }
             }
 
-            // ---------------- ACTUALIZAR MARCADOR ----------------
             scoreText.setString(
                 "P1: " + std::to_string(scorePlayer1) +
                 "  |  P2: " + std::to_string(scorePlayer2)
             );
 
-            // ---------------- DIBUJAR ----------------
             window.draw(goalSprite);
             window.draw(currentPlayer->sprite);
             window.draw(ball.sprite);

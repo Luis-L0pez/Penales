@@ -1,9 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
-#include <Power.h>
 
-struct Power; // forward declaration
 class Ball;
 
 class Player {
@@ -13,7 +11,6 @@ public:
     bool moveLeft = false;
     bool moveRight = false;
     bool reversedControls = false;
-    Power currentPower;
 
     Player(const std::string &name);
 
@@ -21,4 +18,3 @@ public:
     sf::FloatRect getBounds() const;
     void kickBall(Ball &ball);
 };
-

@@ -1,12 +1,12 @@
-#include "../include/Ball.h"
-#include <cstdio>
-#include <cmath>   // para std::sqrt
-
+#include "Ball.h"
+#include <iostream>
+#include <cmath>
 
 Ball::Ball() {
     static sf::Texture texture;
     if (!texture.loadFromFile("assets/ball.png")) {
-        printf("No se pudo cargar ball.png\n");
+        std::cerr << "Error: No se pudo cargar assets/ball.png. Saliendo...\n";
+        exit(-1);
     }
     sprite.setTexture(texture);
     sprite.setScale(0.05f, 0.05f);
@@ -15,7 +15,7 @@ Ball::Ball() {
 
 void Ball::shoot(sf::Vector2f direction, float baseSpeed) {
     velocity = direction;
-    float length = std::sqrt(direction.x*direction.x + direction.y*direction.y);
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
     if (length != 0)
         velocity /= length;
     velocity *= baseSpeed;
@@ -29,6 +29,9 @@ void Ball::activateSpeedBoost(float factor) {
     velocity *= factor;
 }
 
+void Ball::deactivatePowerUps() {
+    // Vacío por ahora
+}
 void Ball::deactivatePowerUps() {
     // Resetear velocidad a la original si se desea
 }
