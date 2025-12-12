@@ -34,6 +34,7 @@ int main() {
     // ---------- JUGADORES ----------
     Player p1("Jugador 1");
     Player p2("Jugador 2");
+
     p1.sprite.setPosition(400.f, 500.f);
     p2.sprite.setPosition(400.f, 500.f);
     p1.sprite.setScale(0.18f, 0.18f);
@@ -74,47 +75,49 @@ int main() {
 
     int score1 = 0, score2 = 0;
 
-    sf::Text scoreText;
-    scoreText.setFont(font);
-    scoreText.setCharacterSize(28);
+    sf::Text scoreText("", font, 28);
     scoreText.setPosition(20, 20);
 
     sf::Text menuText("Presiona ENTER para comenzar", font, 32);
     menuText.setPosition(200, 250);
 
     sf::Text winText("", font, 36);
+    winText.setPosition(200, 250);
 
     GameState state = MENU;
-     bool spacePressed = false;
+    bool spacePressed = false;
 
     // ---------- LOOP ----------
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
+
             if (event.type == sf::Event::Closed)
                 window.close();
-                if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::Space) {
-               spacePressed = false;
-                 }
 
-            if (state == MENU && event.type == sf::Event::KeyPressed &&
+            if (event.type == sf::Event::KeyReleased &&
+                event.key.code == sf::Keyboard::Space)
+                spacePressed = false;
+
+            if (state == MENU &&
+                event.type == sf::Event::KeyPressed &&
                 event.key.code == sf::Keyboard::Enter)
                 state = PLAYING;
 
-                if (state == PLAYING &&
-    event.type == sf::Event::KeyPressed &&
-    event.key.code == sf::Keyboard::Space &&
-    !spacePressed &&
-    !ballMoving) {
+            if (state == PLAYING &&
+                event.type == sf::Event::KeyPressed &&
+                event.key.code == sf::Keyboard::Space &&
+                !spacePressed &&
+                !ballMoving) {
 
-    spacePressed = true;
-    ballMoving = true;
-    keeperTimer = 0.f;
-    ball.shoot({0.f, -1.f}, 500.f);
-}
+                spacePressed = true;
+                ballMoving = true;
+                keeperTimer = 0.f;
+                ball.shoot({0.f, -1.f}, 500.f);
+            }
 
-            if (state == WIN && event.type == sf::Event::KeyPressed &&
+            if (state == WIN &&
+                event.type == sf::Event::KeyPressed &&
                 event.key.code == sf::Keyboard::Escape)
                 window.close();
         }
@@ -129,6 +132,7 @@ int main() {
         }
 
         if (state == PLAYING) {
+
             currentPlayer->moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
             currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
             currentPlayer->update(dt);
@@ -138,44 +142,38 @@ int main() {
 
                 keeperTimer += dt;
                 if (keeperTimer > 0.15f) {
-                    keeper.sprite.move((std::rand()%3 - 1) * keeper.speed * dt * 3.f, 0);
-                    keeperTimer = 0;
+                    keeper.sprite.move((std::rand() % 3 - 1) * keeper.speed * dt * 3.f, 0);
+                    keeperTimer = 0.f;
                 }
             }
 
-            bool goalScored = goalArea.contains(ball.sprite.getPosition());
+            bool goalScored = ball.sprite.getGlobalBounds().intersects(goalArea);
             bool hitKeeper = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
             bool out = ball.sprite.getPosition().y < 0;
-           if (goalScored || hitKeeper || out) {
 
-    if (goalScored && !hitKeeper) {
-        if (player1Turn) score1++;
-        else score2++;
-    }
+            if (goalScored || hitKeeper || out) {
 
-    // CAMBIO DE TURNO
-    player1Turn = !player1Turn;
-    currentPlayer = player1Turn ? &p1 : &p2;
-
-    // 🔥 RESET CORRECTO
-    ballMoving = false;
-    spacePressed = false;
-    resetBall();
-}
-
-                if ((score1 >= 5 || score2 >= 5) && score1 != score2) {
-                    winText.setString(score1 > score2 ? "¡Jugador 1 GANA!" : "¡Jugador 2 GANA!");
-                    winText.setPosition(200, 250);
-                    state = WIN;
+                if (goalScored && !hitKeeper) {
+                    if (player1Turn) score1++;
+                    else score2++;
                 }
 
-                player1Turn = !player1Turn;
-                currentPlayer = player1Turn ? &p1 : &p2;
-                resetBall();
+                if ((score1 >= 5 || score2 >= 5) && score1 != score2) {
+                    winText.setString(score1 > score2 ?
+                        "¡Jugador 1 GANA!" : "¡Jugador 2 GANA!");
+                    state = WIN;
+                } else {
+                    player1Turn = !player1Turn;
+                    currentPlayer = player1Turn ? &p1 : &p2;
+                    spacePressed = false;
+                    resetBall();
+                }
             }
 
-            scoreText.setString("P1: " + std::to_string(score1) +
-                                " | P2: " + std::to_string(score2));
+            scoreText.setString(
+                "P1: " + std::to_string(score1) +
+                " | P2: " + std::to_string(score2)
+            );
 
             window.draw(goal);
             window.draw(p1.sprite);
