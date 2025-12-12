@@ -42,7 +42,7 @@ int main()
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setScale(1.5f, 1.5f);
-    goalSprite.setPosition(window.getSize().x * 0.35f, 620);  // un poco más abajo
+    goalSprite.setPosition(window.getSize().x * 0.35f, 620);
 
     // --------------------------
     // PORTERO
@@ -56,7 +56,8 @@ int main()
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
     keeperSprite.setScale(0.28f, 0.28f);
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 670); // un poco más abajo
+    // Posición inicial central
+    keeperSprite.setPosition(goalSprite.getPosition().x + goalSprite.getGlobalBounds().width/2 - keeperSprite.getGlobalBounds().width/2, 670);
 
     // --------------------------
     // JUGADOR
@@ -70,7 +71,7 @@ int main()
     }
     player.sprite.setTexture(playerTexture);
     player.sprite.setScale(0.85f, 0.85f);
-    player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 350); // un poco más arriba
+    player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 350);
 
     // --------------------------
     // BALÓN
@@ -84,21 +85,16 @@ int main()
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(player.sprite.getPosition());
 
     sf::Vector2f ballVelocity(0.f, 0.f);
     bool ballInMotion = false;
     sf::Vector2f ballTarget(0.f, 0.f);
-    float ballSpeed = 10.f;
+    float ballSpeed = 5.f; // MÁS LENTO
 
     int currentPlayer = 1; // Turno jugador 1 o 2
-
-    sf::Vector2f keeperTarget; // Posición a donde se mueve el portero durante el tiro
+    sf::Vector2f keeperTarget; 
     bool keeperMoving = false;
 
-    // --------------------------
-    // LOOP PRINCIPAL
-    // --------------------------
     while (window.isOpen())
     {
         sf::Event event;
@@ -110,16 +106,12 @@ int main()
 
         float dt = 1.f / 60.f;
 
-        // --------------------------
-        // Movimiento jugador con A y D
-        // --------------------------
+        // Movimiento jugador
         player.moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
         player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         player.update(dt);
 
-        // --------------------------
         // Detectar dirección de tiro
-        // --------------------------
         if (!ballInMotion)
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -140,63 +132,62 @@ int main()
 
             if (ballInMotion)
             {
-                ballSprite.setPosition(player.sprite.getPosition());
+                // BALÓN sale del pie del jugador
+                ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
+                                       player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - 10);
 
-                // Elegir posición aleatoria del portero solo una vez por tiro
+                // Posición aleatoria portero solo una vez
                 float porteroMinX = goalSprite.getPosition().x;
                 float porteroMaxX = goalSprite.getPosition().x + goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width;
                 keeperTarget.x = porteroMinX + static_cast<float>(std::rand() % static_cast<int>(porteroMaxX - porteroMinX));
-                keeperTarget.y = keeperSprite.getPosition().y; // mismo Y
+                keeperTarget.y = keeperSprite.getPosition().y; 
                 keeperMoving = true;
             }
         }
 
-        // --------------------------
         // Mover balón
-        // --------------------------
         if (ballInMotion)
         {
-            // Mover balón
             float length = std::sqrt(ballTarget.x * ballTarget.x + ballTarget.y * ballTarget.y);
             sf::Vector2f direction = ballTarget / length;
             ballSprite.move(direction * ballSpeed);
 
-            // Mover portero solo hasta su destino
+            // Mover portero
             if (keeperMoving)
             {
                 float dx = keeperTarget.x - keeperSprite.getPosition().x;
                 if (std::abs(dx) > 1.f)
-                    keeperSprite.move((dx > 0 ? 1.f : -1.f) * 5.f, 0.f);
+                    keeperSprite.move((dx > 0 ? 1.f : -1.f) * 3.f, 0.f);
                 else
                     keeperMoving = false;
             }
 
-            // --------------------------
-            // Detectar colisión con portero
-            // --------------------------
+            // Colisión portero
             if (ballSprite.getGlobalBounds().intersects(keeperSprite.getGlobalBounds()))
             {
                 std::cout << "Portero detuvo el tiro!\n";
                 ballInMotion = false;
                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
-                ballSprite.setPosition(player.sprite.getPosition());
+                // Reposicionar balón y portero
+                ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
+                                       player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - 10);
+                keeperSprite.setPosition(goalSprite.getPosition().x + goalSprite.getGlobalBounds().width/2 - keeperSprite.getGlobalBounds().width/2, 670);
             }
 
-            // --------------------------
-            // Detectar gol
-            // --------------------------
+            // Gol
             if (ballSprite.getPosition().y < goalSprite.getPosition().y)
             {
                 std::cout << "¡Gol del jugador " << currentPlayer << "!\n";
                 ballInMotion = false;
                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
-                ballSprite.setPosition(player.sprite.getPosition());
+                // Reposicionar balón y portero
+                ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
+                                       player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - 10);
+                keeperSprite.setPosition(goalSprite.getPosition().x + goalSprite.getGlobalBounds().width/2 - keeperSprite.getGlobalBounds().width/2, 670);
             }
         }
 
-        // --------------------------
         // Dibujar todo
-        // --------------------------
         window.clear();
         window.draw(stadiumSprite);
         window.draw(goalSprite);
