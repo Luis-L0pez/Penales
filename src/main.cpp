@@ -30,9 +30,9 @@ int main() {
     sf::Sprite goalSprite(goalTexture);
     goalSprite.setScale(
         300.f / goalTexture.getSize().x,  // más ancho
-        80.f  / goalTexture.getSize().y   // más alto
+        100.f / goalTexture.getSize().y   // más alto
     );
-    goalSprite.setPosition(250.f, 350.f); // más abajo
+    goalSprite.setPosition(250.f, 320.f); // más abajo
 
     sf::FloatRect goalArea(
         goalSprite.getPosition().x,
@@ -46,22 +46,25 @@ int main() {
     player.sprite.setPosition(400.f, 500.f);
 
     Ball ball;
-    ball.sprite.setPosition(
-        player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ball.sprite.getGlobalBounds().width/2,
-        player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
-    );
+    auto resetBall = [&]() {
+        ballMoving = false;
+        shootDirection = sf::Vector2f(0.f, 0.f);
+        ball.sprite.setPosition(
+            player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ball.sprite.getGlobalBounds().width/2,
+            player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
+        );
+    };
+    bool ballMoving = false;
+    sf::Vector2f shootDirection(0.f, 0.f);
+    resetBall();
 
     Keeper keeper;
-    // Ajustar tamaño portero un poquito más pequeño
-    keeper.sprite.setScale(0.7f, 0.7f);
+    keeper.sprite.setScale(0.5f, 0.5f); // portero más pequeño
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width/2 - keeper.sprite.getGlobalBounds().width/2,
         goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height
     );
-    keeper.speed = 150.f;
-
-    sf::Vector2f shootDirection(0.f,0.f);
-    bool ballMoving = false;
+    keeper.speed = 100.f;
 
     sf::Font font;
     if (!font.loadFromFile("assets/fonts/arial.ttf")) return 1;
@@ -112,12 +115,10 @@ int main() {
         // ------------------ Actualizar balón ------------------
         ball.update(dt);
 
-        // ------------------ Movimiento aleatorio del portero ------------------
+        // ------------------ Portero se mueve aleatoriamente ------------------
         if (ballMoving) {
-            // Portero se mueve aleatoriamente mientras el balón se mueve
             float moveDir = (std::rand() % 3 - 1) * keeper.speed * dt; // -1,0,1 multiplicado por velocidad
             keeper.sprite.move(moveDir, 0.f);
-
             float leftLimit = goalArea.left;
             float rightLimit = goalArea.left + goalArea.width - keeper.sprite.getGlobalBounds().width;
             if (keeper.sprite.getPosition().x < leftLimit)
@@ -133,31 +134,17 @@ int main() {
         }
 
         // ------------------ Detectar gol ------------------
-        bool goalScored = false;
-        if (goalArea.contains(ball.sprite.getPosition())) {
-            goalScored = true;
-            scorePlayer1++;
-        }
+        bool goalScored = goalArea.contains(ball.sprite.getPosition());
 
         // ------------------ Colisión con portero ------------------
         if (ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds())) {
-            ballMoving = false;
-            shootDirection = sf::Vector2f(0.f,0.f);
-            // Regenerar balón en jugador
-            ball.sprite.setPosition(
-                player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ball.sprite.getGlobalBounds().width/2,
-                player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
-            );
+            resetBall();
         }
 
         // ------------------ Gol o fuera ------------------
         if (goalScored || ball.sprite.getPosition().y < 0) {
-            ballMoving = false;
-            shootDirection = sf::Vector2f(0.f,0.f);
-            ball.sprite.setPosition(
-                player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ball.sprite.getGlobalBounds().width/2,
-                player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
-            );
+            if (goalScored) scorePlayer1++;
+            resetBall();
         }
 
         // ------------------ Actualizar marcador ------------------
@@ -168,7 +155,7 @@ int main() {
         // ------------------ Dibujar ------------------
         window.clear();
         window.draw(stadiumSprite);
-        window.draw(goalSprite);      // dibujamos arco
+        window.draw(goalSprite);
         window.draw(player.sprite);
         window.draw(ball.sprite);
         window.draw(keeper.sprite);
@@ -178,3 +165,4 @@ int main() {
 
     return 0;
 }
+
