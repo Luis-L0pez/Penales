@@ -28,8 +28,8 @@ int main() {
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png")) return 1;
     sf::Sprite goalSprite(goalTexture);
-    goalSprite.setScale(450.f / goalTexture.getSize().x, 160.f / goalTexture.getSize().y);
-    goalSprite.setPosition(175.f, 350.f); // más abajo
+    goalSprite.setScale(500.f / goalTexture.getSize().x, 180.f / goalTexture.getSize().y); // más grande
+    goalSprite.setPosition(150.f, 350.f); // más abajo
 
     sf::FloatRect goalArea(
         goalSprite.getPosition().x,
@@ -45,8 +45,8 @@ int main() {
     player1.sprite.setPosition(400.f, 500.f);
     player2.sprite.setPosition(400.f, 500.f); // fuera de pantalla
 
-    player1.sprite.setScale(0.35f, 0.35f); // más pequeño
-    player2.sprite.setScale(0.35f, 0.35f); // más pequeño
+    player1.sprite.setScale(0.30f, 0.30f); // jugador más pequeño
+    player2.sprite.setScale(0.30f, 0.30f);
 
     // ------------------ Balón ------------------
     Ball ball;
@@ -67,7 +67,7 @@ int main() {
 
     // ------------------ Portero ------------------
     Keeper keeper;
-    keeper.sprite.setScale(0.12f, 0.12f); // un poquito más pequeño
+    keeper.sprite.setScale(0.12f, 0.12f); // portero pequeño
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width/2 - keeper.sprite.getGlobalBounds().width/2,
         goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 10.f
@@ -136,7 +136,7 @@ int main() {
         currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         currentPlayer->update(dt);
 
-        // Solo se puede disparar si el balón no se está moviendo
+        // Solo disparar si el balón no se mueve
         if (!ballMoving) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
                 shootDirection = sf::Vector2f(-300.f, -500.f);
@@ -148,17 +148,18 @@ int main() {
             if (shootDirection != sf::Vector2f(0.f,0.f)) {
                 ballMoving = true;
                 ball.shoot(shootDirection, 500.f);
-                currentPower = randomPower(); // genera power-up al disparar
+                currentPower = randomPower();
             }
         }
 
         // Actualizar balón
-        ball.update(dt);
-
-        // Portero se mueve aleatoriamente mientras el balón está en el aire
         if (ballMoving) {
-            float moveDir = (std::rand() % 3 - 1) * keeper.speed * dt;
+            ball.update(dt);
+
+            // Portero se mueve aleatoriamente mientras el balón está en el aire
+            float moveDir = ((std::rand() % 3) - 1) * keeper.speed * dt; // -1, 0, 1
             keeper.sprite.move(moveDir, 0.f);
+            // Limitar portero al área de la portería
             float leftLimit = goalArea.left;
             float rightLimit = goalArea.left + goalArea.width - keeper.sprite.getGlobalBounds().width;
             if (keeper.sprite.getPosition().x < leftLimit)
@@ -201,7 +202,7 @@ int main() {
         window.clear();
         window.draw(stadiumSprite);
         window.draw(goalSprite);
-        window.draw(currentPlayer->sprite); // solo jugador actual
+        window.draw(currentPlayer->sprite);
         window.draw(ball.sprite);
         window.draw(keeper.sprite);
         window.draw(scoreText);
@@ -210,4 +211,3 @@ int main() {
 
     return 0;
 }
-
