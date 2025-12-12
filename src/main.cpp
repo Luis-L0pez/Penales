@@ -7,13 +7,13 @@
 int main()
 {
     // --------------------------
-    // VENTANA FULLSCREEN
+    // CREAR VENTANA FULLSCREEN
     // --------------------------
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Penalti", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
 
     // --------------------------
-    // FONDO (ESTADIO)
+    // CARGAR FONDO (ESTADIO)
     // --------------------------
     sf::Texture stadiumTexture;
     if (!stadiumTexture.loadFromFile("assets/estadio.png"))
@@ -21,7 +21,6 @@ int main()
         std::cout << "Error cargando assets/estadio.png\n";
         return 1;
     }
-
     sf::Sprite stadiumSprite;
     stadiumSprite.setTexture(stadiumTexture);
     stadiumSprite.setScale(
@@ -30,7 +29,7 @@ int main()
     );
 
     // --------------------------
-    // PORTERÍA
+    // CARGAR PORTERÍA (ARCO)
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -38,15 +37,13 @@ int main()
         std::cout << "Error cargando assets/arco.png\n";
         return 1;
     }
-
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
-
-    goalSprite.setScale(0.55f, 0.55f);  // un poquito más grande
-    goalSprite.setPosition(window.getSize().x * 0.60f, 80); // MÁS DERECHA y un poco abajo
+    goalSprite.setScale(0.55f, 0.55f);   // tamaño igual
+    goalSprite.setPosition(window.getSize().x * 0.58f, 120); // un poquito a la izquierda
 
     // --------------------------
-    // PORTERO
+    // CARGAR PORTERO
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -54,14 +51,13 @@ int main()
         std::cout << "Error cargando assets/keeper.png\n";
         return 1;
     }
-
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.06f, 0.06f);
-    keeperSprite.setPosition(window.getSize().x * 0.63f, 170); // un poco más arriba
+    keeperSprite.setScale(0.115f, 0.115f); // un poquito más grande
+    keeperSprite.setPosition(window.getSize().x * 0.61f, 240); // un poquito a la izquierda
 
     // --------------------------
-    // JUGADOR
+    // CARGAR JUGADOR
     // --------------------------
     Player player("Luis");
 
@@ -71,13 +67,12 @@ int main()
         std::cout << "Error cargando assets/player.png\n";
         return 1;
     }
-
     player.sprite.setTexture(playerTexture);
     player.sprite.setScale(0.08f, 0.08f);
-    player.sprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 250);
+    player.sprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 330); // un pelín más arriba
 
     // --------------------------
-    // LOOP
+    // LOOP PRINCIPAL
     // --------------------------
     while (window.isOpen())
     {
