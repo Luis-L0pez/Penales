@@ -92,11 +92,11 @@ int main()
     // MARCADOR
     // --------------------------
     sf::Font font;
-    if (!font.loadFromFile("assets/arial.ttf"))
-    {
-        std::cout << "Error cargando fuente arial.ttf\n";
-        return 1;
-    }
+   if (!font.loadFromFile("assets/Fonts/Arial.ttf")) {
+    std::cout << "Error cargando fuente Arial.ttf\n";
+    return 1;
+}
+
 
     int scorePlayer1 = 0;
     int scorePlayer2 = 0;
