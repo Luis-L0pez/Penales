@@ -64,11 +64,12 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(.8f, .8f);  // mucho más grande
-    player.sprite.setPosition(
-        window.getSize().x * 0.38f,
-        window.getSize().y * 300
-    );
+   player.sprite.setScale(0.15f, 0.15f);  // tamaño más grande pero visible
+player.sprite.setPosition(
+    window.getSize().x * 0.38f,        // posición X
+    window.getSize().y - 280           // posición Y desde abajo de la ventana
+);
+
 
     // --------------------------
     // BALÓN — MÁS ABAJO Y A LA IZQUIERDA
