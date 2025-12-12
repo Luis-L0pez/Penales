@@ -2,7 +2,7 @@
 #include <iostream>
 
 Background::Background() {
-    if (!texture.loadFromFile("front/stadium.png")) {
+    if (!texture.loadFromFile("assets/stadium.png")) {
         std::cout << "ERROR: No se pudo cargar stadium.png\n";
     }
     sprite.setTexture(texture);
