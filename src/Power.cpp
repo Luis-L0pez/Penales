@@ -6,7 +6,7 @@
 Power randomPower() {
     Power pow;
     int p = std::rand() % 5; // 0 a 4
-    switch(p) {
+    switch (p) {
         case 1: pow.type = PowerType::SPEED_BOOST; break;
         case 2: pow.type = PowerType::CURVE; break;
         case 3: pow.type = PowerType::FREEZE_KEEPER; break;
@@ -17,7 +17,7 @@ Power randomPower() {
     return pow;
 }
 
-// Aplica el efecto del power
+// Aplica el efecto del power-up
 void applyPowerEffectOnShot(const Power &pow, Ball &b, Keeper &k, Player &shooter, Player &opponent) {
     switch (pow.type) {
         case PowerType::SPEED_BOOST:

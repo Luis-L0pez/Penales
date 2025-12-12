@@ -141,22 +141,24 @@ int main()
                 ballMoving = true;
             }
 
-            if (ballMoving)
-            {
-                ball.shoot(shootDirection, 500.f);
+ if (!ballMoving)  // Solo puedes disparar si la pelota no se está moviendo
+{
+    // Detecta la dirección del tiro
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  shootDirection = sf::Vector2f(-300.f, -500.f);
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) shootDirection = sf::Vector2f(300.f, -500.f);
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    shootDirection = sf::Vector2f(0.f, -500.f);
 
-                // Elegir power-up aleatorio
-                int p = std::rand() % 5;
-                switch(p)
-                {
-                    case 1: currentPower.type = PowerType::SPEED_BOOST; break;
-                    case 2: currentPower.type = PowerType::CURVE; break;
-                    case 3: currentPower.type = PowerType::FREEZE_KEEPER; break;
-                    case 4: currentPower.type = PowerType::REVERSE_CONTROLS; break;
-                    default: currentPower.type = PowerType::NONE; break;
-                }
-                currentPower.active = (currentPower.type != PowerType::NONE);
-            }
+    if (shootDirection != sf::Vector2f(0.f,0.f))  // Si se pulsó alguna tecla de tiro
+    {
+        ballMoving = true;
+        ball.shoot(shootDirection, 500.f);
+
+        // Genera un power-up aleatorio al disparar
+        currentPower = randomPower();
+    }
+}
+
+
         }
 
         // ACTUALIZAR BALÓN

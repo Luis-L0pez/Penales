@@ -1,16 +1,18 @@
 #pragma once
+#include <string>
 #include "Ball.h"
 #include "Player.h"
 #include "Keeper.h"
-#include <string>
 
+// Tipos de Power-ups
 enum class PowerType { NONE, SPEED_BOOST, CURVE, FREEZE_KEEPER, REVERSE_CONTROLS };
 
+// Estructura Power
 struct Power {
     PowerType type = PowerType::NONE;
     bool active = false;
 
-    // Nombre del power para debug o menú
+    // Nombre para debug o menú
     std::string name() const {
         switch (type) {
             case PowerType::NONE: return "None";
@@ -23,6 +25,6 @@ struct Power {
     }
 };
 
-// Declaraciones de funciones
+// Funciones para aplicar o generar power-ups
 Power randomPower();
 void applyPowerEffectOnShot(const Power &pow, Ball &b, Keeper &k, Player &shooter, Player &opponent);

@@ -1,4 +1,5 @@
-#ifndef GAME_H
+
+#pragma once 
 #define GAME_H
 
 #include <vector>
