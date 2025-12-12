@@ -1,14 +1,12 @@
 #include "../include/Player.h"
 #include "../include/Ball.h"
-#include "../include/Power.h"  // 🔹 Necesario para usar Power y PowerType
 #include <cstdio>
 
 Player::Player(const std::string& n) : name(n) {
     speed = 220.f;
     reversedControls = false;
-    currentPower = new Power();       // 🔹 Inicializar puntero a Power
-    currentPower->type = PowerType::NONE; // 🔹 Usar -> porque es puntero
-    currentPower->active = false;
+    currentPower.type = PowerType::NONE;
+    currentPower.active = false;
 
     static sf::Texture texture;
     if (!texture.loadFromFile("assets/player.png")) {
@@ -26,7 +24,6 @@ void Player::update(float dt) {
     if (reversedControls) movement *= -1;
     sprite.move(movement * dt, 0.f);
 
-    // Limitar al jugador dentro de la pantalla
     sf::Vector2f pos = sprite.getPosition();
     if (pos.x < 0.f) sprite.setPosition(0.f, pos.y);
     if (pos.x > 800.f - sprite.getGlobalBounds().width)
@@ -41,7 +38,7 @@ void Player::kickBall(Ball& ball) {
     sf::Vector2f direction(0.f, -1.f);
     float baseSpeed = ball.speed;
 
-    if (currentPower->type == PowerType::SPEED_BOOST) {  // 🔹 -> en vez de .
+    if (currentPower.type == PowerType::SPEED_BOOST) {
         ball.activateSpeedBoost(1.5f);
     } else {
         ball.deactivatePowerUps();
@@ -49,7 +46,6 @@ void Player::kickBall(Ball& ball) {
 
     ball.shoot(direction, baseSpeed);
 
-    // Quitar power-up
-    currentPower->type = PowerType::NONE;
-    currentPower->active = false;
+    currentPower.type = PowerType::NONE;
+    currentPower.active = false;
 }

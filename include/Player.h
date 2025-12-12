@@ -1,11 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
-
-// Forward declarations
-struct Ball;
-struct Power;
-struct Keeper;
+#include "Ball.h"
+#include "Power.h"
 
 struct Player {
     std::string name;
@@ -16,12 +13,11 @@ struct Player {
     bool moveLeft = false;
     bool moveRight = false;
 
-    Power* currentPower = nullptr;  // puntero
+    Power currentPower;   // Power activo
 
     Player(const std::string& n);
 
     void update(float dt);
     sf::FloatRect getBounds() const;
-
     void kickBall(Ball& ball);
 };

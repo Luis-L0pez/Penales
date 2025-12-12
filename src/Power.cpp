@@ -1,12 +1,24 @@
-#include "Power.h"
+#include "../include/Power.h"
+#include "../include/Ball.h"
+#include "../include/Keeper.h"
+#include "../include/Player.h"
 #include <cstdlib>
-#include <ctime>
 
-// Genera un power aleatorio
+std::string Power::name() const {
+    switch(type) {
+        case PowerType::NONE: return "None";
+        case PowerType::SPEED_BOOST: return "Speed Boost";
+        case PowerType::CURVE: return "Curve";
+        case PowerType::FREEZE_KEEPER: return "Freeze Keeper";
+        case PowerType::REVERSE_CONTROLS: return "Reverse Controls";
+    }
+    return "Unknown";
+}
+
 Power randomPower() {
     Power pow;
-    int p = std::rand() % 5; // 0 a 4
-    switch (p) {
+    int p = std::rand() % 5;
+    switch(p) {
         case 1: pow.type = PowerType::SPEED_BOOST; break;
         case 2: pow.type = PowerType::CURVE; break;
         case 3: pow.type = PowerType::FREEZE_KEEPER; break;
@@ -17,9 +29,8 @@ Power randomPower() {
     return pow;
 }
 
-// Aplica el efecto del power-up
 void applyPowerEffectOnShot(const Power &pow, Ball &b, Keeper &k, Player &shooter, Player &opponent) {
-    switch (pow.type) {
+    switch(pow.type) {
         case PowerType::SPEED_BOOST:
             b.velocity *= 1.7f;
             break;
@@ -34,7 +45,6 @@ void applyPowerEffectOnShot(const Power &pow, Ball &b, Keeper &k, Player &shoote
         case PowerType::REVERSE_CONTROLS:
             opponent.reversedControls = true;
             break;
-        default:
-            break;
+        default: break;
     }
 }
