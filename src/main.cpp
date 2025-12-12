@@ -92,8 +92,8 @@ int main() {
     menuText.setString(
         "CONTROLES:\n"
         "Mover jugador: A / D\n"
-        "Tirar balón: Flechas Izq / Der / Arriba\n"
-        "Activar Power-Up: Espacio\n"
+        "Tirar balón: ESPACIO\n"
+        "Activar Power-Up: P\n"
         "Gana el primero que haga 5 goles\n\n"
         "Presiona ENTER para comenzar"
     );
@@ -130,18 +130,14 @@ int main() {
         currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         currentPlayer->update(dt);
 
-        // -------------------- Disparo --------------------
+        // -------------------- Disparo con ESPACIO --------------------
         if(!ballMoving){
-            shootDirection = sf::Vector2f(0.f,0.f); // reset cada frame
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
+                // Dirección fija hacia arriba (puedes variar con random si quieres)
+                shootDirection = sf::Vector2f(0.f, -500.f);
 
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) shootDirection = sf::Vector2f(-300.f,-500.f);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) shootDirection = sf::Vector2f(300.f,-500.f);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) shootDirection = sf::Vector2f(0.f,-500.f);
-
-            if(shootDirection != sf::Vector2f(0.f,0.f)){
                 ballMoving = true;
-                ball.shoot(shootDirection,500.f);
-                currentPower = randomPower();
+                ball.shoot(shootDirection, 500.f);
             }
         }
 
@@ -162,8 +158,8 @@ int main() {
                 keeper.sprite.setPosition(rightLimit, keeper.sprite.getPosition().y);
         }
 
-        // -------------------- Activar power-up --------------------
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && currentPower.active){
+        // -------------------- Activar power-up con tecla P --------------------
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::P) && currentPower.active){
             applyPowerEffectOnShot(currentPower, ball, keeper, *currentPlayer, *currentPlayer);
             currentPower.active = false;
         }
