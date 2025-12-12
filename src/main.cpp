@@ -151,7 +151,7 @@ int main() {
             bool hitKeeper = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
             bool out = ball.sprite.getPosition().y < 0;
 
-            if (goalScored || hitKeeper || out) {
+            if (ballMoving && (goalScored || hitKeeper || out)) {
 
                 if (goalScored && !hitKeeper) {
                     if (player1Turn) score1++;
