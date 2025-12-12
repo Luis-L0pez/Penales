@@ -1,17 +1,16 @@
 #pragma once
-#include <string>
+#include "Ball.h"
+#include "Keeper.h"
+#include "Player.h"
 
-struct Ball;
-struct Player;
-struct Keeper;
-
-enum class PowerType { NONE, SPEED_BOOST, CURVE, FREEZE_KEEPER, REVERSE_CONTROLS };
+enum class PowerType { NONE, SPEED_BOOST, SLOW_KEEPER };
 
 struct Power {
     PowerType type = PowerType::NONE;
     bool active = false;
-    std::string name() const;
 };
 
+// Declaración de funciones
 Power randomPower();
-void applyPowerEffectOnShot(const Power &pow, Ball &b, Keeper &k, Player &shooter, Player &opponent);
+void applyPowerEffectOnShot(Power &power, Ball &ball, Keeper &keeper, Player &player1, Player &player2);
+

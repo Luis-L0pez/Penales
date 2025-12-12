@@ -1,38 +1,30 @@
-#include "Ball.h"
-#include <SFML/Graphics.hpp>
+#include "../include/Ball.h"
 #include <cstdio>
 
 Ball::Ball() {
+    speed = 500.f;
     static sf::Texture texture;
-    if (!texture.loadFromFile("assets/ball.png")) {
+    if (!texture.loadFromFile("assets/ball.png"))
         printf("No se pudo cargar ball.png\n");
-    }
     sprite.setTexture(texture);
-    sprite.setScale(0.5f, 0.5f);
+    sprite.setScale(0.05f, 0.05f);
     velocity = sf::Vector2f(0.f, 0.f);
 }
 
-// Dispara la pelota en una dirección con cierta velocidad
-void Ball::shoot(const sf::Vector2f& direction, float s) {
-    velocity = direction;
-    speed = s;
-}
-
-// Actualiza la posición de la pelota
 void Ball::update(float dt) {
     sprite.move(velocity * dt);
-
-    // Ejemplo: si quieres que frene con el tiempo
-    // velocity *= 0.99f;
 }
 
-// Métodos para power-ups
-void Ball::activateSpeedBoost(float multiplier) {
-    speed *= multiplier;
-    velocity *= multiplier; // aplica al vector de movimiento también
+void Ball::shoot(sf::Vector2f direction, float baseSpeed) {
+    velocity = direction;
+    velocity.x *= baseSpeed;
+    velocity.y *= baseSpeed;
+}
+
+void Ball::activateSpeedBoost(float factor) {
+    velocity *= factor;
 }
 
 void Ball::deactivatePowerUps() {
-    speed = 500.f;        // valor base
-    // Opcional: normaliza la velocidad si quieres
+    // reset si quieres
 }

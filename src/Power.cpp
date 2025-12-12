@@ -1,50 +1,27 @@
-#include "../include/Power.h"
-#include "../include/Ball.h"
-#include "../include/Keeper.h"
-#include "../include/Player.h"
-#include <cstdlib>
-
-std::string Power::name() const {
-    switch(type) {
-        case PowerType::NONE: return "None";
-        case PowerType::SPEED_BOOST: return "Speed Boost";
-        case PowerType::CURVE: return "Curve";
-        case PowerType::FREEZE_KEEPER: return "Freeze Keeper";
-        case PowerType::REVERSE_CONTROLS: return "Reverse Controls";
-    }
-    return "Unknown";
-}
+#include "Power.h"
+#include <cstdlib> // rand()
 
 Power randomPower() {
-    Power pow;
-    int p = std::rand() % 5;
-    switch(p) {
-        case 1: pow.type = PowerType::SPEED_BOOST; break;
-        case 2: pow.type = PowerType::CURVE; break;
-        case 3: pow.type = PowerType::FREEZE_KEEPER; break;
-        case 4: pow.type = PowerType::REVERSE_CONTROLS; break;
-        default: pow.type = PowerType::NONE; break;
-    }
-    pow.active = (pow.type != PowerType::NONE);
-    return pow;
+    Power p;
+    int r = rand() % 2;
+    p.type = (r == 0) ? PowerType::SPEED_BOOST : PowerType::SLOW_KEEPER;
+    p.active = true;
+    return p;
 }
 
-void applyPowerEffectOnShot(const Power &pow, Ball &b, Keeper &k, Player &shooter, Player &opponent) {
-    switch(pow.type) {
+void applyPowerEffectOnShot(Power &power, Ball &ball, Keeper &keeper, Player &player1, Player &player2) {
+    if (!power.active) return;
+
+    switch(power.type) {
         case PowerType::SPEED_BOOST:
-            b.velocity *= 1.7f;
+            ball.velocity *= 1.5f;
             break;
-        case PowerType::CURVE:
-            b.velocity.x += (b.velocity.y < 0 ? 150.f : -150.f);
+        case PowerType::SLOW_KEEPER:
+            keeper.speed *= 0.5f;
             break;
-        case PowerType::FREEZE_KEEPER:
-            k.frozen = true;
-            k.freezeClock.restart();
-            k.freezeDuration = 1.3f;
+        default:
             break;
-        case PowerType::REVERSE_CONTROLS:
-            opponent.reversedControls = true;
-            break;
-        default: break;
     }
+
+    power.active = false;
 }

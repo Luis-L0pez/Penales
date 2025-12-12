@@ -1,19 +1,16 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-struct Ball {
+class Ball {
+public:
     sf::Sprite sprite;
     sf::Vector2f velocity;
-    float speed = 500.f;
+    float speed;
 
-    // Constructor
     Ball();
 
-    // Movimiento y actualización
-    void shoot(const sf::Vector2f& direction, float s);
     void update(float dt);
-
-    // Métodos para power-ups
-    void activateSpeedBoost(float multiplier);
+    void shoot(sf::Vector2f direction, float baseSpeed);
+    void activateSpeedBoost(float factor);
     void deactivatePowerUps();
 };

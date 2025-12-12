@@ -4,20 +4,19 @@
 #include "Ball.h"
 #include "Power.h"
 
-struct Player {
-    std::string name;
+class Player {
+public:
     sf::Sprite sprite;
-    float speed = 220.f;
-
-    bool reversedControls = false;
+    float speed;
     bool moveLeft = false;
     bool moveRight = false;
+    bool reversedControls = false;
+    Power currentPower;
+    std::string name;
 
-    Power currentPower;   // Power activo
-
-    Player(const std::string& n);
+    Player(const std::string &n);
 
     void update(float dt);
+    void kickBall(Ball &ball);
     sf::FloatRect getBounds() const;
-    void kickBall(Ball& ball);
 };

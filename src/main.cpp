@@ -11,7 +11,6 @@
 #include "Keeper.h"
 #include "Power.h"
 
-
 int main()
 {
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Penalti", sf::Style::Fullscreen);
@@ -33,18 +32,26 @@ int main()
     // PORTERO
     // --------------------------
     Keeper keeper;
+    sf::Texture keeperTexture;
+    if (!keeperTexture.loadFromFile("assets/keeper.png")) return 1;
+    keeper.sprite.setTexture(keeperTexture);
+    keeper.sprite.setScale(0.28f, 0.28f);
+    keeper.sprite.setPosition(window.getSize().x * 0.43f, 670.f); // centro aproximado del arco
 
     // --------------------------
     // JUGADOR
     // --------------------------
     Player player("Luis");
+    player.sprite.setPosition(window.getSize().x / 2.f, window.getSize().y - 150.f);
 
     // --------------------------
     // BALÓN
     // --------------------------
     Ball ball;
-    ball.sprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2,
-                            player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height);
+    ball.sprite.setPosition(
+        player.sprite.getPosition().x + player.sprite.getGlobalBounds().width / 2.f - ball.sprite.getGlobalBounds().width / 2.f,
+        player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
+    );
 
     sf::Vector2f shootDirection(0.f, 0.f);
     bool ballMoving = false;
@@ -125,40 +132,16 @@ int main()
         // DISPARAR BALÓN
         if (!ballMoving)
         {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  shootDirection = sf::Vector2f(-300.f, -500.f);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) shootDirection = sf::Vector2f(300.f, -500.f);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    shootDirection = sf::Vector2f(0.f, -500.f);
+
+            if (shootDirection != sf::Vector2f(0.f,0.f))
             {
-                shootDirection = sf::Vector2f(-300.f, -500.f);
                 ballMoving = true;
+                ball.shoot(shootDirection, 500.f);
+                currentPower = randomPower(); // genera un power-up aleatorio
             }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-                shootDirection = sf::Vector2f(300.f, -500.f);
-                ballMoving = true;
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            {
-                shootDirection = sf::Vector2f(0.f, -500.f);
-                ballMoving = true;
-            }
-
- if (!ballMoving)  // Solo puedes disparar si la pelota no se está moviendo
-{
-    // Detecta la dirección del tiro
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  shootDirection = sf::Vector2f(-300.f, -500.f);
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) shootDirection = sf::Vector2f(300.f, -500.f);
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    shootDirection = sf::Vector2f(0.f, -500.f);
-
-    if (shootDirection != sf::Vector2f(0.f,0.f))  // Si se pulsó alguna tecla de tiro
-    {
-        ballMoving = true;
-        ball.shoot(shootDirection, 500.f);
-
-        // Genera un power-up aleatorio al disparar
-        currentPower = randomPower();
-    }
-}
-
-
         }
 
         // ACTUALIZAR BALÓN
@@ -170,7 +153,7 @@ int main()
         // ACTIVAR POWER-UP CON ESPACIO
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && currentPower.active)
         {
-            applyPowerEffectOnShot(currentPower, ball, keeper, player, player); // jugador vs sí mismo en este ejemplo
+            applyPowerEffectOnShot(currentPower, ball, keeper, player, player);
             currentPower.active = false;
         }
 
@@ -179,9 +162,13 @@ int main()
         {
             scorePlayer1++;
             ballMoving = false;
-            ball.sprite.setPosition(player.sprite.getPosition().x, player.sprite.getPosition().y - 20.f);
+            ball.sprite.setPosition(
+                player.sprite.getPosition().x + player.sprite.getGlobalBounds().width / 2.f - ball.sprite.getGlobalBounds().width / 2.f,
+                player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
+            );
         }
 
+        // ACTUALIZAR MARCADOR
         scoreText.setString("P1: " + std::to_string(scorePlayer1) +
                             "  |  P2: " + std::to_string(scorePlayer2));
 
@@ -192,6 +179,7 @@ int main()
         window.clear();
         window.draw(stadiumSprite);
         window.draw(player.sprite);
+        window.draw(keeper.sprite);
         window.draw(ball.sprite);
         window.draw(scoreText);
         window.display();
