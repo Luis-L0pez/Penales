@@ -51,7 +51,7 @@ int main()
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
     keeperSprite.setScale(0.22f, 0.22f);                     
-    keeperSprite.setPosition(window.getSize().x * 0.30f, 740); // un poquito más a la derecha
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 740); // un poquito más a la derecha
 
     // --------------------------
     // JUGADOR — IGUAL QUE ANTES
