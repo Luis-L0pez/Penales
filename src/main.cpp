@@ -51,7 +51,7 @@ int main()
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
     keeperSprite.setScale(0.28f, 0.28f);                    
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 250); // más arriba
+    keeperSprite.setPosition(window.getSize().x * 0.43f, -200); // más arriba
 
     // --------------------------
     // JUGADOR — MÁS GRANDE, ABAJO Y A LA DERECHA
@@ -64,7 +64,7 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(4.f, 4.f);  // mucho más grande
+    player.sprite.setScale(1.2f, 1.2f);  // mucho más grande
     player.sprite.setPosition(
         window.getSize().x * 0.55f,
         window.getSize().y - 200
@@ -82,7 +82,7 @@ int main()
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 120);
+    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y -150);
 
     sf::Vector2f ballVelocity(0.f, 0.f);
 
