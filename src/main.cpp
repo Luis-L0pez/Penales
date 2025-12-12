@@ -64,10 +64,10 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-   player.sprite.setScale(0.15f, 0.15f);  // tamaño más grande pero visible
+   player.sprite.setScale(0.25f, 0.25f);  // tamaño más grande pero visible
 player.sprite.setPosition(
-    window.getSize().x * 0.42f,        // posición X
-    window.getSize().y - 180           // posición Y desde abajo de la ventana
+    window.getSize().x * 0.53f,        // posición X
+    window.getSize().y - 120          // posición Y desde abajo de la ventana
 );
 
 
