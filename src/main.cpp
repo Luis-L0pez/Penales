@@ -13,7 +13,7 @@ int main()
     window.setFramerateLimit(60);
 
     // --------------------------
-    // CARGAR FONDO (ESTADIO)
+    // CARGAR FONDO (ESTADIO) — NO LO MUEVO
     // --------------------------
     sf::Texture stadiumTexture;
     if (!stadiumTexture.loadFromFile("assets/estadio.png"))
@@ -29,7 +29,7 @@ int main()
     );
 
     // --------------------------
-    // CARGAR PORTERÍA (ARCO)
+       // PORTERÍA — MÁS A LA IZQUIERDA + MÁS GRANDE
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -39,11 +39,11 @@ int main()
     }
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
-    goalSprite.setScale(0.55f, 0.55f);   // tamaño igual
-    goalSprite.setPosition(window.getSize().x * 0.58f, 120); // un poquito a la izquierda
+    goalSprite.setScale(0.65f, 0.65f);   // << MÁS GRANDE
+    goalSprite.setPosition(window.getSize().x * 0.52f, 120); // << MÁS A LA IZQUIERDA
 
     // --------------------------
-    // CARGAR PORTERO
+    // PORTERO — MÁS IZQUIERDA + MÁS GRANDE
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -53,11 +53,11 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.115f, 0.115f); // un poquito más grande
-    keeperSprite.setPosition(window.getSize().x * 0.61f, 240); // un poquito a la izquierda
+    keeperSprite.setScale(0.135f, 0.135f); // << UN POQUITO MÁS GRANDE
+    keeperSprite.setPosition(window.getSize().x * 0.56f, 240); // << MÁS A LA IZQUIERDA
 
     // --------------------------
-    // CARGAR JUGADOR
+    // JUGADOR — NO LO MUEVO
     // --------------------------
     Player player("Luis");
 
@@ -69,7 +69,7 @@ int main()
     }
     player.sprite.setTexture(playerTexture);
     player.sprite.setScale(0.08f, 0.08f);
-    player.sprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 330); // un pelín más arriba
+    player.sprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 330);
 
     // --------------------------
     // LOOP PRINCIPAL
