@@ -4,8 +4,8 @@ Player::Player(const std::string& n) {
     name = n;
 
     static sf::Texture texture;
-    if (!texture.loadFromFile("assets/player.png")) {
-        printf("No se pudo cargar player.png\n");
+    if (!texture.loadFromFile("assets/player.jpeg")) {
+        printf("No se pudo cargar player.jpeg\n");
     }
     sprite.setTexture(texture);
 
