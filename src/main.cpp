@@ -59,7 +59,9 @@ int main()
     if (!ballTexture.loadFromFile("assets/ball.png")) return 1;
     sf::Sprite ballSprite(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 150);
+    // Inicialmente alineado con los pies del jugador
+    ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
+                           player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - ballSprite.getGlobalBounds().height/2);
 
     sf::Vector2f shootDirection(0.f, 0.f);
     bool ballMoving = false;
@@ -87,6 +89,41 @@ int main()
     scoreText.setStyle(sf::Text::Bold);
     scoreText.setPosition(scoreBackground.getPosition().x + 20.f, scoreBackground.getPosition().y + 20.f);
     scoreText.setString("P1: 0  |  P2: 0");
+
+    // --------------------------
+    // MENÚ INICIAL
+    // --------------------------
+    sf::Text menuText;
+    menuText.setFont(font);
+    menuText.setCharacterSize(40);
+    menuText.setFillColor(sf::Color::Yellow);
+    menuText.setStyle(sf::Text::Bold);
+    menuText.setString(
+        "CONTROLES:\n"
+        "Jugador se mueve: A / D\n"
+        "Tirar el balón: Flechas Izq, Der, Arriba\n"
+        "Gana el primero que haga 5 goles\n\n"
+        "Presiona ENTER para comenzar"
+    );
+    menuText.setPosition(window.getSize().x/2 - menuText.getGlobalBounds().width/2, window.getSize().y/3);
+
+    bool startGame = false;
+
+    while (!startGame && window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
+                startGame = true;
+        }
+        window.clear();
+        window.draw(stadiumSprite);
+        window.draw(menuText);
+        window.display();
+    }
 
     // --------------------------
     // MOVIMIENTO CONTROLADO
@@ -134,7 +171,9 @@ int main()
 
             if (ballMoving)
             {
-                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 150);
+                // Posicionar balón en pies del jugador
+                ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
+                                       player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - ballSprite.getGlobalBounds().height/2);
                 keeperTargetX = goalSprite.getPosition().x + std::rand() % int(goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width);
                 keeperMoving = true;
             }
@@ -183,7 +222,8 @@ int main()
                 ballMoving = false;
                 keeperMoving = false;
                 player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 350);
-                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 150);
+                ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
+                                       player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - ballSprite.getGlobalBounds().height/2);
                 keeperSprite.setPosition(window.getSize().x * 0.43f, 670);
                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
             }
