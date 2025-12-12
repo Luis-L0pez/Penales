@@ -32,7 +32,5 @@ void Ball::activateSpeedBoost(float factor) {
 void Ball::deactivatePowerUps() {
     // Vacío por ahora
 }
-void Ball::deactivatePowerUps() {
-    // Resetear velocidad a la original si se desea
-}
+
 
