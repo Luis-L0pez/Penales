@@ -3,7 +3,7 @@
 #include "../include/Ball.h"
 #include "../include/Keeper.h"
 #include "../include/RoundManager.h"
-#include "../include/PowerUp.h"
+#include "../include/Power.h"
 
 #include <iostream>
 
