@@ -1,16 +1,23 @@
 #pragma once
-#include "Ball.h"
-#include "Keeper.h"
-#include "Player.h"
+#include <SFML/Graphics.hpp>
 
-enum class PowerType { NONE, SPEED_BOOST, SLOW_KEEPER };
+// Forward declarations
+class Ball;
+class Keeper;
+class Player;
+
+enum class PowerType {
+    NONE,
+    SPEED_BOOST,
+    REVERSE_CONTROLS
+};
 
 struct Power {
     PowerType type = PowerType::NONE;
     bool active = false;
 };
 
-// Declaración de funciones
+// Funciones
 Power randomPower();
 void applyPowerEffectOnShot(Power &power, Ball &ball, Keeper &keeper, Player &player1, Player &player2);
 

@@ -4,13 +4,14 @@
 class Ball {
 public:
     sf::Sprite sprite;
-    sf::Vector2f velocity;
-    float speed;
+    float speed = 400.f;
 
     Ball();
-
-    void update(float dt);
     void shoot(sf::Vector2f direction, float baseSpeed);
+    void update(float dt);
     void activateSpeedBoost(float factor);
     void deactivatePowerUps();
+
+private:
+    sf::Vector2f velocity;
 };
