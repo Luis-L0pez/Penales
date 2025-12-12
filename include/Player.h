@@ -1,24 +1,34 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <string>
 
-#include "Player.h"
+enum class PowerType {
+    None = 0,
+    SpeedBoost,
+    Curve,
+    FreezeKeeper,
+    ReverseControls
+};
 
+struct Power {
+    PowerType type = PowerType::None;
+    std::string name() const;
+};
 
-Player::Player(const std::string& n) {
-    name = n;
-}
+struct Player {
+    std::string name;
 
-void Player::update(float dt) {
-    float movement = 0.f;
+    sf::Sprite sprite;
+    float speed = 220.f;
+    
+    bool reversedControls = false;
 
-    if (moveLeft)  movement -= speed;
-    if (moveRight) movement += speed;
+    bool moveLeft = false;
+    bool moveRight = false;
 
-    // Si los controles están invertidos por un power-up:
-    if (reversedControls)
-        movement *= -1;
+    Power currentPower;
 
-    sprite.move(movement * dt, 0.f);
-}
-
-sf::FloatRect Player::getBounds() const {
-    return sprite.getGlobalBounds();
-}
+    Player(const std::string& n);
+    void update(float dt);
+    sf::FloatRect getBounds() const;
+};

@@ -1,34 +1,33 @@
 #include "../include/Player.h"
 
-void Player::update(float dt) {
-    float dx = 0.f;
+Player::Player(const std::string& n) {
+    name = n;
 
-    if (!reversedControls) {
-        if (moveLeft) dx = -speed;
-        if (moveRight) dx =  speed;
-    } else { 
-        if (moveLeft) dx =  speed;
-        if (moveRight) dx = -speed;
+    static sf::Texture texture;
+    if (!texture.loadFromFile("front/player.png")) {
+        printf("No se pudo cargar player.png\n");
     }
+    sprite.setTexture(texture);
 
-    sprite.move(dx * dt, 0);
+    // Ajusta tamaño del sprite si está muy grande
+    sprite.setScale(0.5f, 0.5f);
 
-    // Limitar al campo
-    float x = sprite.getPosition().x;
-    if (x < 100) sprite.setPosition(100, sprite.getPosition().y);
-    if (x > 700) sprite.setPosition(700, sprite.getPosition().y);
+    // Posición inicial
+    sprite.setPosition(200, 400);
+}
+
+void Player::update(float dt) {
+    float movement = 0.f;
+
+    if (moveLeft)  movement -= speed;
+    if (moveRight) movement += speed;
+
+    if (reversedControls)
+        movement *= -1;
+
+    sprite.move(movement * dt, 0.f);
 }
 
 sf::FloatRect Player::getBounds() const {
     return sprite.getGlobalBounds();
-}
-
-std::string Power::name() const {
-    switch (type) {
-        case PowerType::SpeedBoost: return "SpeedBoost";
-        case PowerType::Curve: return "Curve";
-        case PowerType::FreezeKeeper: return "FreezeKeeper";
-        case PowerType::ReverseControls: return "ReverseControls";
-        default: return "None";
-    }
 }

@@ -1,4 +1,4 @@
-#pragma once
+#pragma once 
 #include <SFML/Graphics.hpp>
 
 struct Keeper {
@@ -10,6 +10,7 @@ struct Keeper {
     float freezeDuration = 1.f;
     sf::Clock freezeClock;
 
+    Keeper();              // <- declarar el constructor aquí
     void update(float dt);
     sf::FloatRect getBounds() const;
 };
