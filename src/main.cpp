@@ -85,6 +85,7 @@ int main() {
     sf::Text winText("", font, 36);
 
     GameState state = MENU;
+     bool spacePressed = false;
 
     // ---------- LOOP ----------
     while (window.isOpen()) {
@@ -92,17 +93,26 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+                if (event.type == sf::Event::KeyReleased &&
+                 event.key.code == sf::Keyboard::Space) {
+               spacePressed = false;
+                 }
 
             if (state == MENU && event.type == sf::Event::KeyPressed &&
                 event.key.code == sf::Keyboard::Enter)
                 state = PLAYING;
 
-            if (state == PLAYING && event.type == sf::Event::KeyPressed &&
-                event.key.code == sf::Keyboard::Space && !ballMoving) {
-                ballMoving = true;
-                keeperTimer = 0.f;
-                ball.shoot({0.f, -1.f}, 500.f);
-            }
+                if (state == PLAYING &&
+    event.type == sf::Event::KeyPressed &&
+    event.key.code == sf::Keyboard::Space &&
+    !spacePressed &&
+    !ballMoving) {
+
+    spacePressed = true;
+    ballMoving = true;
+    keeperTimer = 0.f;
+    ball.shoot({0.f, -1.f}, 500.f);
+}
 
             if (state == WIN && event.type == sf::Event::KeyPressed &&
                 event.key.code == sf::Keyboard::Escape)
