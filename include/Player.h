@@ -1,8 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "Ball.h"
-#include "Power.h"
+
+// Forward declarations para romper la dependencia circular
+struct Ball;
+struct Power;   // Si solo usas por valor/reference/pointer, basta
+struct Keeper;
 
 struct Player {
     std::string name;
@@ -13,12 +16,12 @@ struct Player {
     bool moveLeft = false;
     bool moveRight = false;
 
-    Power currentPower;   // <--- Esto es necesario
+    Power* currentPower = nullptr;   // Usar puntero evita problemas de forward declaration
 
     Player(const std::string& n);
 
     void update(float dt);
     sf::FloatRect getBounds() const;
 
-    void kickBall(Ball& ball);  // <--- Esto también es necesario
+    void kickBall(Ball& ball);  
 };
