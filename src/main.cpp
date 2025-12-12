@@ -1,20 +1,16 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
-#include "Player.h"
 #include <iostream>
-#include <string>
+#include <vector>
 #include <cstdlib>
 #include <ctime>
-#include <vector>
 
-enum class PowerType { NONE, DOUBLE_POINT, BLOCK_TURN, REMOVE_POINT };
+#include "Player.h"
+#include "Ball.h"
+#include "Keeper.h"
+#include "Power.h"
 
-struct Power {
-    PowerType type = PowerType::NONE;
-    bool active = false;
-    int durationFrames = 0;
-};
 
 int main()
 {
@@ -34,72 +30,40 @@ int main()
     );
 
     // --------------------------
-    // PORTERÍA
-    // --------------------------
-    sf::Texture goalTexture;
-    if (!goalTexture.loadFromFile("assets/arco.png")) return 1;
-    sf::Sprite goalSprite(goalTexture);
-    goalSprite.setScale(1.5f, 1.5f);
-    goalSprite.setPosition(window.getSize().x * 0.35f, 610);
-
-    // --------------------------
     // PORTERO
     // --------------------------
-    sf::Texture keeperTexture;
-    if (!keeperTexture.loadFromFile("assets/keeper.png")) return 1;
-    sf::Sprite keeperSprite(keeperTexture);
-    keeperSprite.setScale(0.28f, 0.28f);
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 670);
+    Keeper keeper;
 
     // --------------------------
     // JUGADOR
     // --------------------------
     Player player("Luis");
-    sf::Texture playerTexture;
-    if (!playerTexture.loadFromFile("assets/player.png")) return 1;
-    player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.85f, 0.85f);
-    player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 350);
 
     // --------------------------
     // BALÓN
     // --------------------------
-    sf::Texture ballTexture;
-    if (!ballTexture.loadFromFile("assets/ball.png")) return 1;
-    sf::Sprite ballSprite(ballTexture);
-    ballSprite.setScale(0.05f, 0.05f);
-
-    auto resetBallPosition = [&]() {
-        ballSprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2 - ballSprite.getGlobalBounds().width/2,
-                               player.sprite.getPosition().y + player.sprite.getGlobalBounds().height - ballSprite.getGlobalBounds().height/2);
-    };
-    resetBallPosition();
+    Ball ball;
+    ball.sprite.setPosition(player.sprite.getPosition().x + player.sprite.getGlobalBounds().width/2,
+                            player.sprite.getPosition().y - ball.sprite.getGlobalBounds().height);
 
     sf::Vector2f shootDirection(0.f, 0.f);
     bool ballMoving = false;
 
     // --------------------------
-    // MARCADOR
+    // FONT Y MARCADOR
     // --------------------------
     sf::Font font;
     if (!font.loadFromFile("assets/fonts/arial.ttf")) return 1;
 
     int scorePlayer1 = 0;
     int scorePlayer2 = 0;
-    int currentPlayer = 1;
-
-    sf::RectangleShape scoreBackground(sf::Vector2f(350.f, 80.f));
-    scoreBackground.setFillColor(sf::Color(0, 0, 0, 180));
-    scoreBackground.setOutlineColor(sf::Color::White);
-    scoreBackground.setOutlineThickness(3.f);
-    scoreBackground.setPosition(window.getSize().x - 370.f, 20.f);
 
     sf::Text scoreText;
     scoreText.setFont(font);
     scoreText.setCharacterSize(30);
     scoreText.setFillColor(sf::Color::White);
     scoreText.setStyle(sf::Text::Bold);
-    scoreText.setPosition(scoreBackground.getPosition().x + 20.f, scoreBackground.getPosition().y + 20.f);
+    scoreText.setPosition(20.f, 20.f);
     scoreText.setString("P1: 0  |  P2: 0");
 
     // --------------------------
@@ -114,10 +78,12 @@ int main()
         "CONTROLES:\n"
         "Jugador se mueve: A / D\n"
         "Tirar el balon: Flechas Izq, Der, Arriba\n"
+        "Activar power-up: Espacio\n"
         "Gana el primero que haga 5 goles\n\n"
         "Presiona ENTER para comenzar"
     );
-    menuText.setPosition(window.getSize().x/2 - menuText.getGlobalBounds().width/2, window.getSize().y/3);
+    menuText.setPosition(window.getSize().x/2 - menuText.getGlobalBounds().width/2,
+                         window.getSize().y/3);
 
     bool startGame = false;
     while (!startGame && window.isOpen())
@@ -136,18 +102,9 @@ int main()
     }
 
     // --------------------------
-    // MOVIMIENTO CONTROLADO
+    // POWER-UP ACTIVO
     // --------------------------
-    float ballSpeedX = 4.f;
-    float ballSpeedY = 6.f;
-    float keeperSpeed = 3.f;
-    bool keeperMoving = false;
-    float keeperTargetX = keeperSprite.getPosition().x;
-
-    std::vector<sf::CircleShape> ballTrail;
-
     Power currentPower;
-    bool skipTurnNext = false; // para BLOCK_TURN
 
     // --------------------------
     // LOOP PRINCIPAL
@@ -160,145 +117,80 @@ int main()
 
         float dt = 1.f / 60.f;
 
-        // Movimiento del jugador
+        // MOVIMIENTO JUGADOR
         player.moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
         player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         player.update(dt);
 
-        // Determinar dirección de tiro
+        // DISPARAR BALÓN
         if (!ballMoving)
         {
-            if (skipTurnNext)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
             {
-                skipTurnNext = false;
-                currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                shootDirection = sf::Vector2f(-300.f, -500.f);
+                ballMoving = true;
             }
-            else
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
             {
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-                {
-                    shootDirection = sf::Vector2f(-ballSpeedX, -ballSpeedY);
-                    ballMoving = true;
-                }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-                {
-                    shootDirection = sf::Vector2f(ballSpeedX, -ballSpeedY);
-                    ballMoving = true;
-                }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-                {
-                    shootDirection = sf::Vector2f(0.f, -ballSpeedY);
-                    ballMoving = true;
-                }
+                shootDirection = sf::Vector2f(300.f, -500.f);
+                ballMoving = true;
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            {
+                shootDirection = sf::Vector2f(0.f, -500.f);
+                ballMoving = true;
+            }
 
-                if (ballMoving)
-                {
-                    resetBallPosition();
-                    keeperTargetX = goalSprite.getPosition().x + std::rand() % int(goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width);
-                    keeperMoving = true;
-                    ballTrail.clear();
+            if (ballMoving)
+            {
+                ball.shoot(shootDirection, 500.f);
 
-                    // Elegir poder aleatorio
-                    int p = std::rand() % 5;
-                    switch(p)
-                    {
-                        case 1: currentPower.type = PowerType::DOUBLE_POINT; currentPower.active = true; break;
-                        case 2: currentPower.type = PowerType::BLOCK_TURN; currentPower.active = true; break;
-                        case 3: currentPower.type = PowerType::REMOVE_POINT; currentPower.active = true; break;
-                        default: currentPower.type = PowerType::NONE; currentPower.active = false; break;
-                    }
+                // Elegir power-up aleatorio
+                int p = std::rand() % 5;
+                switch(p)
+                {
+                    case 1: currentPower.type = PowerType::SPEED_BOOST; break;
+                    case 2: currentPower.type = PowerType::CURVE; break;
+                    case 3: currentPower.type = PowerType::FREEZE_KEEPER; break;
+                    case 4: currentPower.type = PowerType::REVERSE_CONTROLS; break;
+                    default: currentPower.type = PowerType::NONE; break;
                 }
+                currentPower.active = (currentPower.type != PowerType::NONE);
             }
         }
 
-        // Mover balón
-        if (ballMoving)
+        // ACTUALIZAR BALÓN
+        ball.update(dt);
+
+        // ACTUALIZAR PORTERO
+        keeper.update(dt);
+
+        // ACTIVAR POWER-UP CON ESPACIO
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && currentPower.active)
         {
-            ballSprite.move(shootDirection);
-            // Estela/trayectoria
-            sf::CircleShape dot(5.f);
-            dot.setFillColor(sf::Color(255,255,255,150));
-            dot.setPosition(ballSprite.getPosition().x + ballSprite.getGlobalBounds().width/2 - dot.getRadius(),
-                            ballSprite.getPosition().y + ballSprite.getGlobalBounds().height/2 - dot.getRadius());
-            ballTrail.push_back(dot);
+            applyPowerEffectOnShot(currentPower, ball, keeper, player, player); // jugador vs sí mismo en este ejemplo
+            currentPower.active = false;
         }
 
-        // Mover portero
-        if (keeperMoving)
+        // DETECCIÓN DE GOLES (simple)
+        if (ball.sprite.getPosition().y < 0)
         {
-            if (std::abs(keeperSprite.getPosition().x - keeperTargetX) > keeperSpeed)
-            {
-                if (keeperSprite.getPosition().x < keeperTargetX) keeperSprite.move(keeperSpeed, 0.f);
-                else keeperSprite.move(-keeperSpeed, 0.f);
-            }
-            else
-            {
-                keeperSprite.setPosition(keeperTargetX, keeperSprite.getPosition().y);
-                keeperMoving = false;
-            }
+            scorePlayer1++;
+            ballMoving = false;
+            ball.sprite.setPosition(player.sprite.getPosition().x, player.sprite.getPosition().y - 20.f);
         }
 
-        // Detección de gol y reset
-        if (ballMoving)
-        {
-            bool scored = false;
-            if (ballSprite.getGlobalBounds().intersects(goalSprite.getGlobalBounds()))
-            {
-                if (ballSprite.getGlobalBounds().intersects(keeperSprite.getGlobalBounds()))
-                    std::cout << "¡Portero la tapó!\n";
-                else
-                {
-                    int points = 1;
-                    if (currentPower.active && currentPower.type == PowerType::DOUBLE_POINT) points = 2;
-                    if (currentPlayer == 1) scorePlayer1 += points;
-                    else scorePlayer2 += points;
+        scoreText.setString("P1: " + std::to_string(scorePlayer1) +
+                            "  |  P2: " + std::to_string(scorePlayer2));
 
-                    std::cout << "¡Gol del jugador " << currentPlayer << " (" << points << " puntos)!\n";
-                    scored = true;
-                    scoreText.setString("P1: " + std::to_string(scorePlayer1) + "  |  P2: " + std::to_string(scorePlayer2));
+        // FIN DE JUEGO
+        if (scorePlayer1 >= 5 || scorePlayer2 >= 5) window.close();
 
-                    // Aplicar poderes de efectos negativos
-                    if (currentPower.active && currentPower.type == PowerType::REMOVE_POINT)
-                    {
-                        if (currentPlayer == 1 && scorePlayer2>0) scorePlayer2--;
-                        else if (currentPlayer ==2 && scorePlayer1>0) scorePlayer1--;
-                    }
-                    if (currentPower.active && currentPower.type == PowerType::BLOCK_TURN)
-                        skipTurnNext = true;
-                }
-            }
-
-            // Reset balón y portero
-            if (scored || ballSprite.getPosition().y < 0 || ballSprite.getPosition().y > window.getSize().y ||
-                ballSprite.getPosition().x < 0 || ballSprite.getPosition().x > window.getSize().x)
-            {
-                ballMoving = false;
-                keeperMoving = false;
-                player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 350);
-                resetBallPosition();
-                keeperSprite.setPosition(window.getSize().x * 0.43f, 670);
-                currentPlayer = (currentPlayer == 1) ? 2 : 1;
-                currentPower.active = false;
-                ballTrail.clear();
-            }
-        }
-
-        // Fin de juego
-        if (scorePlayer1 >= 5 || scorePlayer2 >= 5)
-        {
-            std::cout << "¡Fin del juego!\n";
-            window.close();
-        }
-
-        // Dibujar todo
+        // DIBUJAR
         window.clear();
         window.draw(stadiumSprite);
-        window.draw(goalSprite);
-        window.draw(keeperSprite);
         window.draw(player.sprite);
-        for(auto &dot: ballTrail) window.draw(dot); // dibujar estela
-        window.draw(ballSprite);
-        window.draw(scoreBackground);
+        window.draw(ball.sprite);
         window.draw(scoreText);
         window.display();
     }

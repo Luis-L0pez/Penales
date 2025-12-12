@@ -15,6 +15,8 @@ struct Power {
     std::string name() const;
 };
 
+struct Ball; // Declaración adelantada para poder usar Ball en kickBall
+
 struct Player {
     std::string name;
 
@@ -22,7 +24,6 @@ struct Player {
     float speed = 220.f;
     
     bool reversedControls = false;
-
     bool moveLeft = false;
     bool moveRight = false;
 
@@ -31,4 +32,7 @@ struct Player {
     Player(const std::string& n);
     void update(float dt);
     sf::FloatRect getBounds() const;
+
+    // Método para interactuar con la pelota
+    void kickBall(Ball& ball);
 };
