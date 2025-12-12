@@ -67,10 +67,8 @@ int main()
    player.sprite.setScale(0.85f, 0.85f);  // tamaño más grande pero visible
 player.sprite.setPosition(
     window.getSize().x * 0.40f,        // posición X
-    window.getSize().y 200        // posición Y desde abajo de la ventana
-);
-
-
+    window.getSize().y * .80f       // posición Y desde abajo de la ventana
+       );
     // --------------------------
     // BALÓN — MÁS ABAJO Y A LA IZQUIERDA
     // --------------------------
