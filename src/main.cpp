@@ -13,32 +13,47 @@ int main()
     // ESTADIO (NO LO TOCO)
     // --------------------------
     sf::Texture stadiumTexture;
-    stadiumTexture.loadFromFile("assets/estadio.png");
-    sf::Sprite stadiumSprite(stadiumTexture);
+    if (!stadiumTexture.loadFromFile("assets/estadio.png"))
+    {
+        std::cout << "Error cargando assets/estadio.png\n";
+        return 1;
+    }
+    sf::Sprite stadiumSprite;
+    stadiumSprite.setTexture(stadiumTexture);
     stadiumSprite.setScale(
         float(window.getSize().x) / stadiumTexture.getSize().x,
         float(window.getSize().y) / stadiumTexture.getSize().y
     );
 
     // --------------------------
-    // PORTERÍA — MÁS GRANDE + MÁS A LA IZQUIERDA
+    // PORTERÍA — MÁS A LA IZQUIERDA + MÁS GRANDE
     // --------------------------
     sf::Texture goalTexture;
-    goalTexture.loadFromFile("assets/arco.png");
+    if (!goalTexture.loadFromFile("assets/arco.png"))
+    {
+        std::cout << "Error cargando assets/arco.png\n";
+        return 1;
+    }
+    sf::Sprite goalSprite;
+    goalSprite.setTexture(goalTexture);
 
-    sf::Sprite goalSprite(goalTexture);
-    goalSprite.setScale(0.75f, 0.75f);          // MÁS GRANDE
-    goalSprite.setPosition(window.getSize().x * 0.46f, 120); // MÁS A LA IZQUIERDA
+    goalSprite.setScale(0.75f, 0.75f);                          // MÁS GRANDE
+    goalSprite.setPosition(window.getSize().x * 0.46f, 120);    // MÁS A LA IZQUIERDA
 
     // --------------------------
     // PORTERO — MÁS A LA IZQUIERDA (MISMO TAMAÑO)
     // --------------------------
     sf::Texture keeperTexture;
-    keeperTexture.loadFromFile("assets/keeper.png");
+    if (!keeperTexture.loadFromFile("assets/keeper.png"))
+    {
+        std::cout << "Error cargando assets/keeper.png\n";
+        return 1;
+    }
+    sf::Sprite keeperSprite;
+    keeperSprite.setTexture(keeperTexture);
 
-    sf::Sprite keeperSprite(keeperTexture);
-    keeperSprite.setScale(0.135f, 0.135f);      // MISMO TAMAÑO
-    keeperSprite.setPosition(window.getSize().x * 0.50f, 240); // MÁS A LA IZQUIERDA
+    keeperSprite.setScale(0.115f, 0.115f);                      // MISMO TAMAÑO
+    keeperSprite.setPosition(window.getSize().x * 0.50f, 240);  // MÁS A LA IZQUIERDA
 
     // --------------------------
     // JUGADOR — UN PELÍN MÁS ABAJO
@@ -46,14 +61,21 @@ int main()
     Player player("Luis");
 
     sf::Texture playerTexture;
-    playerTexture.loadFromFile("assets/player.png");
-
+    if (!playerTexture.loadFromFile("assets/player.png"))
+    {
+        std::cout << "Error cargando assets/player.png\n";
+        return 1;
+    }
     player.sprite.setTexture(playerTexture);
     player.sprite.setScale(0.08f, 0.08f);
-    player.sprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 300); // ABAJO UN POQUITO
+
+    player.sprite.setPosition(
+        window.getSize().x * 0.45f,
+        window.getSize().y - 300   // UN PELÍN MÁS ABAJO
+    );
 
     // --------------------------
-    // LOOP
+    // LOOP PRINCIPAL
     // --------------------------
     while (window.isOpen())
     {
