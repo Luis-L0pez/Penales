@@ -37,10 +37,10 @@ int main()
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setScale(1.5f, 1.5f);                        
-    goalSprite.setPosition(window.getSize().x * 0.35f, 600);  // más arriba
+    goalSprite.setPosition(window.getSize().x * 0.35f, 500);  // más arriba
 
     // --------------------------
-    // PORTERO — MÁS ARRIBA + UN POCO MÁS GRANDE
+    // PORTERO — MÁS ARRIBA Y UN POCO MÁS GRANDE
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -50,11 +50,11 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.30f, 0.30f);  // un poco más grande
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 650); // más arriba
+    keeperSprite.setScale(0.28f, 0.28f);                    
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 600); // más arriba
 
     // --------------------------
-    // JUGADOR — MUCHO MÁS GRANDE
+    // JUGADOR — MÁS GRANDE, ABAJO Y A LA DERECHA
     // --------------------------
     Player player("Luis");
     sf::Texture playerTexture;
@@ -64,11 +64,14 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.25f, 0.25f);  // mucho más grande
-    player.sprite.setPosition(window.getSize().x * 0.55f, window.getSize().y - 250);  // un poco más abajo y derecha
+    player.sprite.setScale(0.2f, 0.2f);  // mucho más grande
+    player.sprite.setPosition(
+        window.getSize().x * 0.55f,
+        window.getSize().y - 200
+    );
 
     // --------------------------
-    // BALÓN — MÁS A LA IZQUIERDA Y ABAJO
+    // BALÓN — MÁS ABAJO Y A LA IZQUIERDA
     // --------------------------
     sf::Texture ballTexture;
     if (!ballTexture.loadFromFile("assets/ball.png"))
@@ -79,7 +82,7 @@ int main()
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 230); // izquierda y abajo
+    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 250);
 
     sf::Vector2f ballVelocity(0.f, 0.f);
 
@@ -90,8 +93,10 @@ int main()
     {
         sf::Event event;
         while (window.pollEvent(event))
+        {
             if (event.type == sf::Event::Closed)
                 window.close();
+        }
 
         float dt = 1.f / 60.f;
 
@@ -100,10 +105,11 @@ int main()
         player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
         player.update(dt);
 
-        // Mover balón al presionar espacio
+        // Patear balón
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        {
             ballVelocity = sf::Vector2f(0.f, -12.f);
-
+        }
         ballSprite.move(ballVelocity);
 
         // Dibujar todo
