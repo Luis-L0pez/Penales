@@ -26,7 +26,7 @@ int main()
     );
 
     // --------------------------
-    // PORTERÍA — MÁS GRANDE + MÁS ABAJO
+    // PORTERÍA — MÁS ARRIBA
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -37,10 +37,10 @@ int main()
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setScale(1.5f, 1.5f);                        
-    goalSprite.setPosition(window.getSize().x * 0.35f, 700);  // MÁS ABAJO
+    goalSprite.setPosition(window.getSize().x * 0.35f, 600);  // más arriba
 
     // --------------------------
-    // PORTERO — MÁS GRANDE + MÁS ABAJO + UN POCO A LA DERECHA
+    // PORTERO — MÁS ARRIBA + UN POCO MÁS GRANDE
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -50,11 +50,11 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.28f, 0.28f);  // un poquito más grande
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 780); // más abajo y un poco a la derecha
+    keeperSprite.setScale(0.30f, 0.30f);  // un poco más grande
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 650); // más arriba
 
     // --------------------------
-    // JUGADOR — MÁS GRANDE + MÁS ABAJO + MÁS A LA DERECHA
+    // JUGADOR — MUCHO MÁS GRANDE
     // --------------------------
     Player player("Luis");
     sf::Texture playerTexture;
@@ -64,11 +64,11 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.14f, 0.14f);  // más grande
-    player.sprite.setPosition(window.getSize().x * 0.50f, window.getSize().y - 250);
+    player.sprite.setScale(0.25f, 0.25f);  // mucho más grande
+    player.sprite.setPosition(window.getSize().x * 0.55f, window.getSize().y - 250);  // un poco más abajo y derecha
 
     // --------------------------
-    // BALÓN
+    // BALÓN — MÁS A LA IZQUIERDA Y ABAJO
     // --------------------------
     sf::Texture ballTexture;
     if (!ballTexture.loadFromFile("assets/ball.png"))
@@ -79,7 +79,7 @@ int main()
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(window.getSize().x * 0.55f, window.getSize().y - 250);
+    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y - 230); // izquierda y abajo
 
     sf::Vector2f ballVelocity(0.f, 0.f);
 
