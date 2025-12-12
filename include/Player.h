@@ -1,7 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "Power.h"  // Solo incluir, no redefinir nada
+#include "Ball.h"
+#include "Power.h"
 
 struct Player {
     std::string name;
@@ -12,9 +13,12 @@ struct Player {
     bool moveLeft = false;
     bool moveRight = false;
 
-    Power currentPower; // si necesitas tenerlo aquí
+    Power currentPower;   // <--- Esto es necesario
 
     Player(const std::string& n);
+
     void update(float dt);
     sf::FloatRect getBounds() const;
+
+    void kickBall(Ball& ball);  // <--- Esto también es necesario
 };
