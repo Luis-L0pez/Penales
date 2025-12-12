@@ -36,8 +36,8 @@ int main()
     }
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
-    goalSprite.setScale(1.35f, 1.35f);                       // MÁS GRANDE
-    goalSprite.setPosition(window.getSize().x * 0.38f, 380); // MÁS ABAJO
+    goalSprite.setScale(1.45f, 1.45f);                       // MÁS GRANDE
+    goalSprite.setPosition(window.getSize().x * 0.38f, 420); // MÁS ABAJO
 
     // --------------------------
     // PORTERO — MÁS GRANDE + MÁS ABAJO
@@ -50,11 +50,11 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.13f, 0.13f);                    // MÁS GRANDE
-    keeperSprite.setPosition(window.getSize().x * 0.44f, 520); // MÁS ABAJO
+    keeperSprite.setScale(0.14f, 0.14f);                     // MÁS GRANDE
+    keeperSprite.setPosition(window.getSize().x * 0.44f, 560); // MÁS ABAJO
 
     // --------------------------
-    // JUGADOR — UN POCO MÁS ABAJO
+    // JUGADOR — SE QUEDA IGUAL
     // --------------------------
     Player player("Luis");
     sf::Texture playerTexture;
@@ -67,7 +67,7 @@ int main()
     player.sprite.setScale(0.065f, 0.065f);
     player.sprite.setPosition(
         window.getSize().x * 0.45f,
-        window.getSize().y - 230 // UN POCO MÁS ABAJO
+        window.getSize().y - 230 // MISMO LUGAR
     );
 
     // --------------------------
