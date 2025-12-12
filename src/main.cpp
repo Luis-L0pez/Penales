@@ -105,6 +105,13 @@ int main() {
     winText.setPosition(200, 250);
 
     GameState state = MENU;
+    sf::Text goalText("", font, 42);
+goalText.setFillColor(sf::Color::Yellow);
+goalText.setStyle(sf::Text::Bold);
+goalText.setPosition(250.f, 220.f);
+
+bool showGoalText = false;
+float goalTimer = 0.f;
     bool shotPressed = false;
 
     // ---------- LOOP ----------
@@ -180,24 +187,40 @@ int main() {
             bool hitKeeper  = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
             bool out        = ball.sprite.getPosition().y < 0;
 
-            if (ballMoving && (goalScored || hitKeeper || out)) {
+          if (ballMoving && (goalScored || hitKeeper || out)) {
 
-                if (goalScored && !hitKeeper) {
-                    if (player1Turn) score1++;
-                    else score2++;
-                }
+    if (goalScored && !hitKeeper) {
 
-                if ((score1 >= 5 || score2 >= 5) && score1 != score2) {
-                    winText.setString(score1 > score2 ?
-                        "¡Jugador 1 GANA!\nESC para salir" :
-                        "¡Jugador 2 GANA!\nESC para salir");
-                    state = WIN;
-                } else {
-                    player1Turn = !player1Turn;
-                    currentPlayer = player1Turn ? &p1 : &p2;
-                    resetBall();
-                }
-            }
+        if (player1Turn) {
+            score1++;
+            goalText.setString("¡GOOOOL JUGADOR 1!");
+        } else {
+            score2++;
+            goalText.setString("¡GOOOOL JUGADOR 2!");
+        }
+
+        // Centrar texto
+        goalText.setPosition(
+            window.getSize().x / 2 - goalText.getGlobalBounds().width / 2,
+            200.f
+        );
+
+        showGoalText = true;
+        goalTimer = 1.2f; // segundos que se muestra
+
+        if (showGoalText) {
+    goalTimer -= dt;
+    if (goalTimer <= 0.f) {
+        showGoalText = false;
+    }
+}
+    }
+
+    // CAMBIO DE TURNO
+    player1Turn = !player1Turn;
+    currentPlayer = player1Turn ? &p1 : &p2;
+    resetBall();
+}
 
             scoreText.setString(
                 "P1: " + std::to_string(score1) +
@@ -211,6 +234,11 @@ int main() {
             window.draw(keeper.sprite);
             window.draw(scoreText);
         }
+
+
+        if (showGoalText) {
+    window.draw(goalText);
+      }
 
         if (state == WIN) {
             window.draw(winText);
