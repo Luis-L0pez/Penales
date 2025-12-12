@@ -10,7 +10,7 @@ int main()
     window.setFramerateLimit(60);
 
     // --------------------------
-    // ESTADIO (NO LO TOCO)
+    // ESTADIO (NO TOCAR)
     // --------------------------
     sf::Texture stadiumTexture;
     if (!stadiumTexture.loadFromFile("assets/estadio.png"))
@@ -26,7 +26,7 @@ int main()
     );
 
     // --------------------------
-    // PORTERÍA — MÁS GRANDE + MÁS IZQUIERDA + MÁS ABAJO
+    // PORTERÍA — MÁS GRANDE + MÁS ABAJO
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -37,11 +37,11 @@ int main()
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
 
-    goalSprite.setScale(0.90f, 0.90f);                          // MÁS GRANDE
-    goalSprite.setPosition(window.getSize().x * 0.40f, 180);    // MÁS IZQUIERDA + MÁS ABAJO
+    goalSprite.setScale(1.05f, 1.05f);             // MÁS GRANDE
+    goalSprite.setPosition(window.getSize().x * 0.40f, 240);  // MÁS ABAJO
 
     // --------------------------
-    // PORTERO — MÁS IZQUIERDA + MÁS ABAJO (MISMO TAMAÑO)
+    // PORTERO — MÁS ABAJO
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -52,11 +52,11 @@ int main()
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
 
-    keeperSprite.setScale(0.115f, 0.115f);                      // MISMO TAMAÑO
-    keeperSprite.setPosition(window.getSize().x * 0.46f, 310);  // MÁS A LA IZQUIERDA + MÁS ABAJO
+    keeperSprite.setScale(0.115f, 0.115f);               // MISMO TAMAÑO
+    keeperSprite.setPosition(window.getSize().x * 0.46f, 360);  // MÁS ABAJO
 
     // --------------------------
-    // JUGADOR — UN PELÍN MÁS ABAJO
+    // JUGADOR — UN POCO MÁS PEQUEÑO
     // --------------------------
     Player player("Luis");
 
@@ -67,11 +67,11 @@ int main()
         return 1;
     }
     player.sprite.setTexture(playerTexture);
-    player.sprite.setScale(0.08f, 0.08f);
 
+    player.sprite.setScale(0.065f, 0.065f);   // MÁS PEQUEÑO
     player.sprite.setPosition(
         window.getSize().x * 0.45f,
-        window.getSize().y - 280   // MÁS ABAJO
+        window.getSize().y - 280
     );
 
     // --------------------------
