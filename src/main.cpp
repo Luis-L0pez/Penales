@@ -24,15 +24,15 @@ int main() {
         float(window.getSize().y)/stadiumTexture.getSize().y
     );
 
-    // ------------------ Portería (arco.png) ------------------
+    // ------------------ Portería ------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png")) return 1;
     sf::Sprite goalSprite(goalTexture);
     goalSprite.setScale(
-        450.f / goalTexture.getSize().x,  // más ancho
-        160.f / goalTexture.getSize().y   // más alto
+        450.f / goalTexture.getSize().x,
+        160.f / goalTexture.getSize().y
     );
-    goalSprite.setPosition(175.f, 300.f); // un poco más arriba
+    goalSprite.setPosition(175.f, 330.f); // más abajo que antes
 
     sf::FloatRect goalArea(
         goalSprite.getPosition().x,
@@ -46,7 +46,7 @@ int main() {
     Player player2("Jugador2");
     Player* currentPlayer = &player1;
     player1.sprite.setPosition(400.f, 500.f);
-    player2.sprite.setPosition(400.f, 500.f); // posición fuera de pantalla, pero lo necesitamos para turnos
+    player2.sprite.setPosition(400.f, 500.f); // fuera de pantalla, solo para turnos
 
     // ------------------ Balón ------------------
     Ball ball;
@@ -67,14 +67,14 @@ int main() {
 
     // ------------------ Portero ------------------
     Keeper keeper;
-    keeper.sprite.setScale(0.15f, 0.15f); // portero muchísimo pequeño
+    keeper.sprite.setScale(0.15f, 0.15f); // muy pequeño
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width/2 - keeper.sprite.getGlobalBounds().width/2,
-        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height
+        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 10.f // un poco más abajo
     );
     keeper.speed = 120.f;
 
-    // ------------------ Marcador ------------------
+    // ------------------ Font y marcador ------------------
     sf::Font font;
     if (!font.loadFromFile("assets/fonts/arial.ttf")) return 1;
     int scorePlayer1 = 0;
@@ -86,6 +86,38 @@ int main() {
     scoreText.setFillColor(sf::Color::White);
     scoreText.setStyle(sf::Text::Bold);
     scoreText.setPosition(20.f, 20.f);
+
+    // ------------------ Menú inicial ------------------
+    sf::Text menuText;
+    menuText.setFont(font);
+    menuText.setCharacterSize(28);
+    menuText.setFillColor(sf::Color::Yellow);
+    menuText.setStyle(sf::Text::Bold);
+    menuText.setString(
+        "CONTROLES:\n"
+        "Mover jugador: A / D\n"
+        "Tirar balón: Flechas Izq / Der / Arriba\n"
+        "Activar Power-Up: Espacio\n"
+        "Gana el primero que haga 5 goles\n\n"
+        "Presiona ENTER para comenzar"
+    );
+    menuText.setPosition(window.getSize().x/2 - menuText.getGlobalBounds().width/2,
+                         window.getSize().y/3);
+
+    bool startGame = false;
+    while (!startGame && window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
+                startGame = true;
+        }
+        window.clear();
+        window.draw(stadiumSprite);
+        window.draw(menuText);
+        window.display();
+    }
 
     Power currentPower;
 
@@ -123,7 +155,7 @@ int main() {
         // Actualizar balón
         ball.update(dt);
 
-        // Portero se mueve aleatoriamente solo cuando el balón está en el aire
+        // Portero se mueve aleatoriamente mientras el balón está en el aire
         if (ballMoving) {
             float moveDir = (std::rand() % 3 - 1) * keeper.speed * dt;
             keeper.sprite.move(moveDir, 0.f);
@@ -169,7 +201,7 @@ int main() {
         window.clear();
         window.draw(stadiumSprite);
         window.draw(goalSprite);
-        window.draw(currentPlayer->sprite); // solo se ve el jugador que tira
+        window.draw(currentPlayer->sprite); // solo jugador actual
         window.draw(ball.sprite);
         window.draw(keeper.sprite);
         window.draw(scoreText);
