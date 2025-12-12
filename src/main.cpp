@@ -21,20 +21,18 @@ int main()
         std::cout << "Error cargando assets/estadio.png\n";
         return 1;
     }
-
     sf::Sprite stadiumSprite;
     stadiumSprite.setTexture(stadiumTexture);
 
     // --------------------------
-    // CARGAR PORTERÍA
+    // CARGAR PORTERÍA (ARCO)
     // --------------------------
     sf::Texture goalTexture;
-    if (!goalTexture.loadFromFile("assets/porteria.png"))
+    if (!goalTexture.loadFromFile("assets/arco.png"))
     {
-        std::cout << "Error cargando assets/porteria.png\n";
+        std::cout << "Error cargando assets/arco.png\n";
         return 1;
     }
-
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setPosition(300, 50);
@@ -46,8 +44,10 @@ int main()
 
     sf::Texture playerTexture;
     if (!playerTexture.loadFromFile("assets/fronts/player.png"))
+    {
+        std::cout << "Error cargando assets/fronts/player.png\n";
         return 1;
-
+    }
     player.sprite.setTexture(playerTexture);
     player.sprite.setPosition(500, 550);
 
@@ -56,8 +56,10 @@ int main()
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/fronts/keeper.png"))
+    {
+        std::cout << "Error cargando assets/fronts/keeper.png\n";
         return 1;
-
+    }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
     keeperSprite.setPosition(500, 120);
@@ -67,8 +69,10 @@ int main()
     // --------------------------
     sf::Texture ballTexture;
     if (!ballTexture.loadFromFile("assets/fronts/ball.png"))
+    {
+        std::cout << "Error cargando assets/fronts/ball.png\n";
         return 1;
-
+    }
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setPosition(620, 480);
@@ -95,7 +99,6 @@ int main()
         // --------------------------
         player.moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
         player.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
-
         player.update(dt);
 
         // --------------------------
@@ -105,7 +108,6 @@ int main()
         {
             ballVelocity = sf::Vector2f(0.f, -12.f);
         }
-
         ballSprite.move(ballVelocity);
 
         // --------------------------
@@ -113,11 +115,11 @@ int main()
         // --------------------------
         window.clear();
 
-        window.draw(stadiumSprite);  // ✔ YA FUNCIONA
-        window.draw(goalSprite);     // ✔ YA FUNCIONA
-        window.draw(player.sprite);
-        window.draw(keeperSprite);
-        window.draw(ballSprite);
+        window.draw(stadiumSprite);  // Fondo
+        window.draw(goalSprite);     // Portería / arco
+        window.draw(player.sprite);  // Jugador
+        window.draw(keeperSprite);   // Portero
+        window.draw(ballSprite);     // Balón
 
         window.display();
     }
