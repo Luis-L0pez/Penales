@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
-#include "Ball.h"
-#include "Player.h"
-#include "Keeper.h"
+
+// Forward declarations
+struct Ball;
+struct Player;
+struct Keeper;
 
 // Tipos de Power-ups
 enum class PowerType { NONE, SPEED_BOOST, CURVE, FREEZE_KEEPER, REVERSE_CONTROLS };
