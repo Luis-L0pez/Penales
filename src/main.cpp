@@ -66,7 +66,7 @@ int main()
     player.sprite.setTexture(playerTexture);
    player.sprite.setScale(0.85f, 0.85f);  // tamaño más grande pero visible
 player.sprite.setPosition(
-    window.getSize().x * 0.40f,        // posición X
+    window.getSize().x * 0.45f,        // posición X
     window.getSize().y -420       // posición Y desde abajo de la ventana
        );
     // --------------------------
@@ -81,7 +81,7 @@ player.sprite.setPosition(
     sf::Sprite ballSprite;
     ballSprite.setTexture(ballTexture);
     ballSprite.setScale(0.05f, 0.05f);
-    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y -150);
+    ballSprite.setPosition(window.getSize().x * 0.45f, window.getSize().y -420);
 
     sf::Vector2f ballVelocity(0.f, 0.f);
 
