@@ -2,7 +2,7 @@
 
 Keeper::Keeper() {
     static sf::Texture texture;
-    if (!texture.loadFromFile("front/keeper.png")) {
+    if (!texture.loadFromFile("assets/keeper.png")) {
         printf("No se pudo cargar keeper.png\n");
     }
 

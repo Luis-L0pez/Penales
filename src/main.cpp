@@ -43,9 +43,9 @@ int main()
     Player player("Luis");
 
     sf::Texture playerTexture;
-    if (!playerTexture.loadFromFile("assets/fronts/player.png"))
+    if (!playerTexture.loadFromFile("assets/player.png"))
     {
-        std::cout << "Error cargando assets/fronts/player.png\n";
+        std::cout << "Error cargando assets/player.png\n";
         return 1;
     }
     player.sprite.setTexture(playerTexture);
@@ -55,9 +55,9 @@ int main()
     // CARGAR PORTERO
     // --------------------------
     sf::Texture keeperTexture;
-    if (!keeperTexture.loadFromFile("assets/fronts/keeper.png"))
+    if (!keeperTexture.loadFromFile("assets/keeper.png"))
     {
-        std::cout << "Error cargando assets/fronts/keeper.png\n";
+        std::cout << "Error cargando assets/keeper.png\n";
         return 1;
     }
     sf::Sprite keeperSprite;
@@ -68,9 +68,9 @@ int main()
     // CARGAR BALÓN
     // --------------------------
     sf::Texture ballTexture;
-    if (!ballTexture.loadFromFile("assets/fronts/ball.png"))
+    if (!ballTexture.loadFromFile("assets/ball.png"))
     {
-        std::cout << "Error cargando assets/fronts/ball.png\n";
+        std::cout << "Error cargando assets/ball.png\n";
         return 1;
     }
     sf::Sprite ballSprite;
