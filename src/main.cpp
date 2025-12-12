@@ -67,7 +67,7 @@ int main()
     player.sprite.setScale(.8f, .8f);  // mucho más grande
     player.sprite.setPosition(
         window.getSize().x * 0.38f,
-        window.getSize().y 300
+        window.getSize().y * 300
     );
 
     // --------------------------
