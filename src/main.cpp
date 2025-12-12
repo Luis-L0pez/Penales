@@ -28,7 +28,9 @@ int main() {
     goalTexture.loadFromFile("assets/arco.png");
     sf::Sprite goal(goalTexture);
     goal.setScale(500.f / goalTexture.getSize().x, 180.f / goalTexture.getSize().y);
-    goal.setPosition(150.f, 350.f);
+
+    // 🔧 SUBIDA
+    goal.setPosition(150.f, 300.f);
     sf::FloatRect goalArea = goal.getGlobalBounds();
 
     // ---------- JUGADORES ----------
@@ -37,8 +39,10 @@ int main() {
 
     p1.sprite.setPosition(400.f, 500.f);
     p2.sprite.setPosition(400.f, 500.f);
-    p1.sprite.setScale(0.18f, 0.18f);
-    p2.sprite.setScale(0.18f, 0.18f);
+
+    // 🔧 MÁS GRANDES
+    p1.sprite.setScale(0.22f, 0.22f);
+    p2.sprite.setScale(0.22f, 0.22f);
 
     Player* currentPlayer = &p1;
     bool player1Turn = true;
@@ -62,10 +66,13 @@ int main() {
     // ---------- PORTERO ----------
     Keeper keeper;
     keeper.sprite.setScale(0.12f, 0.12f);
+
+    // 🔧 SUBIDO JUNTO CON PORTERÍA
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width / 2 - keeper.sprite.getGlobalBounds().width / 2,
-        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 10.f
+        goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height - 20.f
     );
+
     keeper.speed = 120.f;
     float keeperTimer = 0.f;
 
@@ -148,9 +155,10 @@ int main() {
             }
 
             bool goalScored = ball.sprite.getGlobalBounds().intersects(goalArea);
-            bool hitKeeper = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
-            bool out = ball.sprite.getPosition().y < 0;
+            bool hitKeeper  = ball.sprite.getGlobalBounds().intersects(keeper.sprite.getGlobalBounds());
+            bool out        = ball.sprite.getPosition().y < 0;
 
+            // 🔥 SOLO SI HUBO DISPARO
             if (ballMoving && (goalScored || hitKeeper || out)) {
 
                 if (goalScored && !hitKeeper) {
