@@ -103,11 +103,11 @@ int main()
     int currentPlayer = 1;
 
     sf::RectangleShape scoreBackground;
-    scoreBackground.setSize(sf::Vector2f(320.f, 80.f));
+    scoreBackground.setSize(sf::Vector2f(350.f, 80.f));
     scoreBackground.setFillColor(sf::Color(0, 0, 0, 180));
     scoreBackground.setOutlineColor(sf::Color::White);
     scoreBackground.setOutlineThickness(3.f);
-    scoreBackground.setPosition(window.getSize().x - 350.f, 20.f);
+    scoreBackground.setPosition(window.getSize().x - 370.f, 20.f);
 
     sf::Text scoreText;
     scoreText.setFont(font);
@@ -166,7 +166,8 @@ int main()
 
             if (ballMoving)
             {
-                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 120);
+                // Posicionar balón en pies del jugador
+                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 200);
                 keeperTargetX = goalSprite.getPosition().x + std::rand() % int(goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width);
                 keeperMoving = true;
             }
@@ -176,13 +177,21 @@ int main()
         if (ballMoving)
             ballSprite.move(shootDirection);
 
-        // Mover portero una sola vez
+        // Mover portero solo una vez
         if (keeperMoving)
         {
-            if (keeperSprite.getPosition().x < keeperTargetX)
-                keeperSprite.move(keeperSpeed, 0.f);
-            else if (keeperSprite.getPosition().x > keeperTargetX)
-                keeperSprite.move(-keeperSpeed, 0.f);
+            if (std::abs(keeperSprite.getPosition().x - keeperTargetX) > keeperSpeed)
+            {
+                if (keeperSprite.getPosition().x < keeperTargetX)
+                    keeperSprite.move(keeperSpeed, 0.f);
+                else
+                    keeperSprite.move(-keeperSpeed, 0.f);
+            }
+            else
+            {
+                keeperSprite.setPosition(keeperTargetX, keeperSprite.getPosition().y);
+                keeperMoving = false;
+            }
         }
 
         // Detección de gol
@@ -202,8 +211,7 @@ int main()
 
                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
                 ballMoving = false;
-                keeperMoving = false;
-                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 120);
+                ballSprite.setPosition(player.sprite.getPosition().x + 50, player.sprite.getPosition().y + 200);
                 player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 250);
                 keeperSprite.setPosition(window.getSize().x * 0.43f, 660);
             }
