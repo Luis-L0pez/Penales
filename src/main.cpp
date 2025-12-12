@@ -12,7 +12,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Penalti", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
 
-    std::srand(static_cast<unsigned>(std::time(nullptr))); // Para movimiento aleatorio del portero
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     // --------------------------
     // ESTADIO (NO TOCAR)
@@ -42,7 +42,7 @@ int main()
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
     goalSprite.setScale(1.5f, 1.5f);
-    goalSprite.setPosition(window.getSize().x * 0.35f, 610);
+    goalSprite.setPosition(window.getSize().x * 0.35f, 620);  // un poco más abajo
 
     // --------------------------
     // PORTERO
@@ -55,8 +55,8 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.22f, 0.22f);
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 660);
+    keeperSprite.setScale(0.28f, 0.28f);
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 670); // un poco más abajo
 
     // --------------------------
     // JUGADOR
@@ -70,7 +70,7 @@ int main()
     }
     player.sprite.setTexture(playerTexture);
     player.sprite.setScale(0.85f, 0.85f);
-    player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 300);
+    player.sprite.setPosition(window.getSize().x * 0.40f, window.getSize().y - 350); // un poco más arriba
 
     // --------------------------
     // BALÓN
@@ -92,6 +92,9 @@ int main()
     float ballSpeed = 10.f;
 
     int currentPlayer = 1; // Turno jugador 1 o 2
+
+    sf::Vector2f keeperTarget; // Posición a donde se mueve el portero durante el tiro
+    bool keeperMoving = false;
 
     // --------------------------
     // LOOP PRINCIPAL
@@ -138,6 +141,13 @@ int main()
             if (ballInMotion)
             {
                 ballSprite.setPosition(player.sprite.getPosition());
+
+                // Elegir posición aleatoria del portero solo una vez por tiro
+                float porteroMinX = goalSprite.getPosition().x;
+                float porteroMaxX = goalSprite.getPosition().x + goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width;
+                keeperTarget.x = porteroMinX + static_cast<float>(std::rand() % static_cast<int>(porteroMaxX - porteroMinX));
+                keeperTarget.y = keeperSprite.getPosition().y; // mismo Y
+                keeperMoving = true;
             }
         }
 
@@ -146,22 +156,20 @@ int main()
         // --------------------------
         if (ballInMotion)
         {
+            // Mover balón
             float length = std::sqrt(ballTarget.x * ballTarget.x + ballTarget.y * ballTarget.y);
             sf::Vector2f direction = ballTarget / length;
             ballSprite.move(direction * ballSpeed);
 
-            // --------------------------
-            // Portero se mueve aleatoriamente dentro del arco
-            // --------------------------
-            float porteroMinX = goalSprite.getPosition().x;
-            float porteroMaxX = goalSprite.getPosition().x + goalSprite.getGlobalBounds().width - keeperSprite.getGlobalBounds().width;
-            float porteroMinY = goalSprite.getPosition().y;
-            float porteroMaxY = goalSprite.getPosition().y + goalSprite.getGlobalBounds().height - keeperSprite.getGlobalBounds().height;
-
-            keeperSprite.setPosition(
-                porteroMinX + static_cast<float>(std::rand() % static_cast<int>(porteroMaxX - porteroMinX)),
-                porteroMinY + static_cast<float>(std::rand() % static_cast<int>(porteroMaxY - porteroMinY))
-            );
+            // Mover portero solo hasta su destino
+            if (keeperMoving)
+            {
+                float dx = keeperTarget.x - keeperSprite.getPosition().x;
+                if (std::abs(dx) > 1.f)
+                    keeperSprite.move((dx > 0 ? 1.f : -1.f) * 5.f, 0.f);
+                else
+                    keeperMoving = false;
+            }
 
             // --------------------------
             // Detectar colisión con portero
