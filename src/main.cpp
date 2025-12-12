@@ -26,7 +26,7 @@ int main()
     );
 
     // --------------------------
-    // PORTERÍA — MÁS ABAJO + MÁS A LA DERECHA
+    // PORTERÍA — MÁS GRANDE
     // --------------------------
     sf::Texture goalTexture;
     if (!goalTexture.loadFromFile("assets/arco.png"))
@@ -36,11 +36,11 @@ int main()
     }
     sf::Sprite goalSprite;
     goalSprite.setTexture(goalTexture);
-    goalSprite.setScale(1.25f, 1.25f);                        
-    goalSprite.setPosition(window.getSize().x * 0.35f, 650);  // más abajo y un poco a la derecha
+    goalSprite.setScale(1.5f, 1.5f);                        // MÁS GRANDE
+    goalSprite.setPosition(window.getSize().x * 0.35f, 650);  // misma posición abajo/derecha
 
     // --------------------------
-    // PORTERO — MÁS A LA DERECHA + UN POCO MÁS GRANDE + UN POCO MÁS ABAJO
+    // PORTERO — MÁS GRANDE + POSICIÓN X = 0.43
     // --------------------------
     sf::Texture keeperTexture;
     if (!keeperTexture.loadFromFile("assets/keeper.png"))
@@ -50,8 +50,8 @@ int main()
     }
     sf::Sprite keeperSprite;
     keeperSprite.setTexture(keeperTexture);
-    keeperSprite.setScale(0.22f, 0.22f);                     
-    keeperSprite.setPosition(window.getSize().x * 0.43f, 740); // un poquito más a la derecha
+    keeperSprite.setScale(0.25f, 0.25f);                   // un poco más grande
+    keeperSprite.setPosition(window.getSize().x * 0.43f, 740); // posición X ajustada
 
     // --------------------------
     // JUGADOR — IGUAL QUE ANTES
