@@ -29,10 +29,10 @@ int main() {
     if (!goalTexture.loadFromFile("assets/arco.png")) return 1;
     sf::Sprite goalSprite(goalTexture);
     goalSprite.setScale(
-        400.f / goalTexture.getSize().x,  // más ancho
-        150.f / goalTexture.getSize().y   // más alto
+        450.f / goalTexture.getSize().x,  // más ancho
+        160.f / goalTexture.getSize().y   // más alto
     );
-    goalSprite.setPosition(200.f, 350.f); // más abajo
+    goalSprite.setPosition(175.f, 300.f); // un poco más arriba
 
     sf::FloatRect goalArea(
         goalSprite.getPosition().x,
@@ -42,31 +42,32 @@ int main() {
     );
 
     // ------------------ Jugadores ------------------
-    Player player1("Luis");
-    Player player2("Rival");
-    player1.sprite.setPosition(250.f, 500.f);
-    player2.sprite.setPosition(500.f, 500.f);
+    Player player1("Jugador1");
+    Player player2("Jugador2");
+    Player* currentPlayer = &player1;
+    player1.sprite.setPosition(400.f, 500.f);
+    player2.sprite.setPosition(400.f, 500.f); // posición fuera de pantalla, pero lo necesitamos para turnos
 
     // ------------------ Balón ------------------
     Ball ball;
     sf::Vector2f shootDirection(0.f, 0.f);
     bool ballMoving = false;
-    bool player1Turn = true; // turno de jugador
+    bool player1Turn = true;
 
     auto resetBall = [&]() {
         ballMoving = false;
         shootDirection = sf::Vector2f(0.f, 0.f);
-        Player& currentPlayer = player1Turn ? player1 : player2;
+        currentPlayer = player1Turn ? &player1 : &player2;
         ball.sprite.setPosition(
-            currentPlayer.sprite.getPosition().x + currentPlayer.sprite.getGlobalBounds().width/2 - ball.sprite.getGlobalBounds().width/2,
-            currentPlayer.sprite.getPosition().y - ball.sprite.getGlobalBounds().height
+            currentPlayer->sprite.getPosition().x + currentPlayer->sprite.getGlobalBounds().width/2 - ball.sprite.getGlobalBounds().width/2,
+            currentPlayer->sprite.getPosition().y - ball.sprite.getGlobalBounds().height
         );
     };
     resetBall();
 
     // ------------------ Portero ------------------
     Keeper keeper;
-    keeper.sprite.setScale(0.3f, 0.3f); // portero muy pequeño
+    keeper.sprite.setScale(0.15f, 0.15f); // portero muchísimo pequeño
     keeper.sprite.setPosition(
         goalArea.left + goalArea.width/2 - keeper.sprite.getGlobalBounds().width/2,
         goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height
@@ -99,10 +100,9 @@ int main() {
         float dt = 1.f / 60.f;
 
         // Movimiento jugador actual
-        Player& currentPlayer = player1Turn ? player1 : player2;
-        currentPlayer.moveLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
-        currentPlayer.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
-        currentPlayer.update(dt);
+        currentPlayer->moveLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+        currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+        currentPlayer->update(dt);
 
         // Elegir dirección de tiro
         if (!ballMoving) {
@@ -123,7 +123,7 @@ int main() {
         // Actualizar balón
         ball.update(dt);
 
-        // Portero se mueve aleatoriamente mientras el balón está en el aire
+        // Portero se mueve aleatoriamente solo cuando el balón está en el aire
         if (ballMoving) {
             float moveDir = (std::rand() % 3 - 1) * keeper.speed * dt;
             keeper.sprite.move(moveDir, 0.f);
@@ -137,7 +137,7 @@ int main() {
 
         // Activar power-up
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && currentPower.active) {
-            applyPowerEffectOnShot(currentPower, ball, keeper, currentPlayer, currentPlayer);
+            applyPowerEffectOnShot(currentPower, ball, keeper, *currentPlayer, *currentPlayer);
             currentPower.active = false;
         }
 
@@ -169,8 +169,7 @@ int main() {
         window.clear();
         window.draw(stadiumSprite);
         window.draw(goalSprite);
-        window.draw(player1.sprite);
-        window.draw(player2.sprite);
+        window.draw(currentPlayer->sprite); // solo se ve el jugador que tira
         window.draw(ball.sprite);
         window.draw(keeper.sprite);
         window.draw(scoreText);
