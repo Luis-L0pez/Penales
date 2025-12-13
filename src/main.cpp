@@ -70,8 +70,10 @@ int main() {
         goalArea.left + goalArea.width / 2 - keeper.sprite.getGlobalBounds().width / 2,
         goalArea.top + goalArea.height - keeper.sprite.getGlobalBounds().height + 5.f
     );
-    keeper.speed = 200.f;
-    float keeperDir = 1.f;
+    keeper.speed = 260.f;
+
+    bool keeperActive = false;
+    float keeperDir = 0.f;
 
     // ---------- FUENTE ----------
     sf::Font font;
@@ -82,8 +84,7 @@ int main() {
         "CLAVALA\n\nJuego de Penales\n\n"
         "CONTROLES:\n"
         "Mover jugador: A / D\n"
-        "Disparar:\n"
-        "Izquierda  Centro  Derecha\n\n"
+        "Disparar: Flechas\n\n"
         "Presiona ENTER para comenzar",
         font, 32
     );
@@ -130,19 +131,30 @@ int main() {
                 state = PLAYING;
             }
 
+            // -------- DISPARO SOLO CON FLECHAS --------
             if (state == PLAYING &&
                 event.type == sf::Event::KeyPressed &&
                 !shotPressed &&
                 !ballMoving) {
 
-                sf::Vector2f dir(0.f, -1.f);
+                sf::Vector2f dir;
 
-                if (event.key.code == sf::Keyboard::Left)  dir = {-0.6f, -1.f};
-                if (event.key.code == sf::Keyboard::Right) dir = { 0.6f, -1.f};
-                if (event.key.code == sf::Keyboard::Up)    dir = { 0.f, -1.f};
+                if (event.key.code == sf::Keyboard::Left)
+                    dir = {-0.6f, -1.f};
+                else if (event.key.code == sf::Keyboard::Right)
+                    dir = {0.6f, -1.f};
+                else if (event.key.code == sf::Keyboard::Up)
+                    dir = {0.f, -1.f};
+                else
+                    continue; // ignora A W S D
 
                 shotPressed = true;
                 ballMoving = true;
+
+                int r = std::rand() % 3;
+                keeperDir = (r == 0 ? -1.f : r == 1 ? 0.f : 1.f);
+                keeperActive = true;
+
                 ball.shoot(dir, 600.f);
             }
 
@@ -163,16 +175,20 @@ int main() {
         // ---------- JUEGO ----------
         if (state == PLAYING) {
 
+            // Jugador SOLO A / D
             currentPlayer->moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
             currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
             currentPlayer->update(dt);
 
-            keeper.sprite.move(keeperDir * keeper.speed * dt, 0);
+            // Portero SOLO al disparo
+            if (keeperActive) {
+                keeper.sprite.move(keeperDir * keeper.speed * dt, 0);
 
-            if (keeper.sprite.getPosition().x < goalArea.left ||
-                keeper.sprite.getPosition().x + keeper.sprite.getGlobalBounds().width >
-                goalArea.left + goalArea.width) {
-                keeperDir *= -1.f;
+                if (keeper.sprite.getPosition().x < goalArea.left ||
+                    keeper.sprite.getPosition().x + keeper.sprite.getGlobalBounds().width >
+                    goalArea.left + goalArea.width) {
+                    keeperDir *= -1.f;
+                }
             }
 
             if (ballMoving)
@@ -185,6 +201,9 @@ int main() {
 
             if (ballMoving && (hitKeeper || goalScored || out)) {
 
+                keeperActive = false;
+                keeperDir = 0.f;
+
                 if (goalScored && !hitKeeper) {
 
                     if (player1Turn) {
@@ -196,9 +215,8 @@ int main() {
                     }
 
                     goalText.setPosition(
-                        window.getSize().x / 2 - goalText.getGlobalBounds().width / 2,
-                        200.f
-                    );
+                        window.getSize().x / 2 -
+                        goalText.getGlobalBounds().width / 2, 200.f);
 
                     showGoalText = true;
                     goalTimer = 1.2f;
