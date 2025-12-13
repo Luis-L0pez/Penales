@@ -40,7 +40,6 @@ int main() {
 
     p1.sprite.setPosition(400.f, 500.f);
     p2.sprite.setPosition(400.f, 500.f);
-
     p1.sprite.setScale(0.22f, 0.22f);
     p2.sprite.setScale(0.22f, 0.22f);
 
@@ -81,22 +80,47 @@ int main() {
     sf::Font font;
     font.loadFromFile("assets/fonts/arial.ttf");
 
+    // ---------- MENU ----------
+    sf::Text menuText(
+        "CLAVALA\n\n"
+        "PENALES\n\n"
+        "CONTROLES:\n"
+        "A / D  MOVER\n"
+        "FLECHAS  DISPARAR\n\n"
+        "ENTER  INICIAR",
+        font, 32
+    );
+    menuText.setFillColor(sf::Color::White);
+    menuText.setOutlineColor(sf::Color::Black);
+    menuText.setOutlineThickness(2.f);
+
+    sf::FloatRect m = menuText.getGlobalBounds();
+    menuText.setOrigin(m.width / 2, m.height / 2);
+    menuText.setPosition(400.f, 260.f);
+
+    sf::RectangleShape menuBox;
+    menuBox.setSize({m.width + 60.f, m.height + 50.f});
+    menuBox.setOrigin(menuBox.getSize().x / 2, menuBox.getSize().y / 2);
+    menuBox.setPosition(400.f, 260.f);
+    menuBox.setFillColor(sf::Color(0, 0, 0, 190));
+
     // ---------- MARCADOR ----------
     int score1 = 0, score2 = 0;
     sf::Text scoreText("", font, 28);
     scoreText.setPosition(20.f, 20.f);
 
-    // ---------- MENSAJE ----------
-    sf::Text msgText("", font, 40);
-    msgText.setFillColor(sf::Color::White);
-    msgText.setOutlineColor(sf::Color::Black);
-    msgText.setOutlineThickness(2.f);
+    // ---------- TEXTO GOL / ATAJADA ----------
+    sf::Text infoText("", font, 42);
+    infoText.setFillColor(sf::Color::Yellow);
+    infoText.setOutlineColor(sf::Color::Black);
+    infoText.setOutlineThickness(2.f);
 
-    sf::RectangleShape msgBox;
-    msgBox.setFillColor(sf::Color(0, 0, 0, 180));
+    bool showInfo = false;
+    float infoTimer = 0.f;
 
-    bool showMsg = false;
-    float msgTimer = 0.f;
+    // ---------- TEXTO GANADOR ----------
+    sf::Text winText("", font, 36);
+    winText.setFillColor(sf::Color::White);
 
     GameState state = MENU;
     bool shotPressed = false;
@@ -117,10 +141,11 @@ int main() {
 
             if (state == MENU &&
                 event.type == sf::Event::KeyPressed &&
-                event.key.code == sf::Keyboard::Enter)
+                event.key.code == sf::Keyboard::Enter) {
                 state = PLAYING;
+            }
 
-            // DISPARO SOLO FLECHAS
+            // -------- DISPARO SOLO FLECHAS --------
             if (state == PLAYING &&
                 event.type == sf::Event::KeyPressed &&
                 !shotPressed &&
@@ -140,8 +165,7 @@ int main() {
                 shotPressed = true;
                 ballMoving = true;
 
-                int r = std::rand() % 3;
-                keeperDir = (r == 0 ? -1.f : r == 1 ? 0.f : 1.f);
+                keeperDir = (std::rand() % 3 - 1);
                 keeperActive = true;
 
                 ball.shoot(dir, 600.f);
@@ -151,14 +175,31 @@ int main() {
         window.clear();
         window.draw(stadium);
 
+        // ---------- MENU ----------
+        if (state == MENU) {
+            window.draw(menuBox);
+            window.draw(menuText);
+            window.display();
+            continue;
+        }
+
+        // ---------- JUEGO ----------
         if (state == PLAYING) {
 
             currentPlayer->moveLeft  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
             currentPlayer->moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
             currentPlayer->update(dt);
 
-            if (keeperActive)
+            if (keeperActive) {
                 keeper.sprite.move(keeperDir * keeper.speed * dt, 0);
+
+                if (keeper.sprite.getPosition().x < goalArea.left ||
+                    keeper.sprite.getPosition().x +
+                    keeper.sprite.getGlobalBounds().width >
+                    goalArea.left + goalArea.width) {
+                    keeperDir *= -1.f;
+                }
+            }
 
             if (ballMoving)
                 ball.update(dt);
@@ -171,33 +212,36 @@ int main() {
             if (ballMoving && (hitKeeper || goalScored || out)) {
 
                 keeperActive = false;
+                keeperDir = 0.f;
+                ballMoving = false;
 
                 if (goalScored && !hitKeeper) {
                     if (player1Turn) {
                         score1++;
-                        msgText.setString("GOOL JUGADOR 1");
+                        infoText.setString("GOOOL JUGADOR 1");
                     } else {
                         score2++;
-                        msgText.setString("GOOL JUGADOR 2");
+                        infoText.setString("GOOOL JUGADOR 2");
                     }
-                }
-                else if (hitKeeper) {
-                    msgText.setString("ATAJADA");
-                }
-                else {
-                    msgText.setString("FALLASTE");
+                } else {
+                    infoText.setString("ATAJADA");
                 }
 
-                sf::FloatRect t = msgText.getGlobalBounds();
-                msgText.setOrigin(t.width / 2, t.height / 2);
-                msgText.setPosition(400.f, 180.f);
+                sf::FloatRect t = infoText.getGlobalBounds();
+                infoText.setOrigin(t.width / 2, t.height / 2);
+                infoText.setPosition(400.f, 200.f);
 
-                msgBox.setSize({t.width + 40.f, t.height + 30.f});
-                msgBox.setOrigin(msgBox.getSize().x / 2, msgBox.getSize().y / 2);
-                msgBox.setPosition(400.f, 180.f);
+                showInfo = true;
+                infoTimer = 1.2f;
 
-                showMsg = true;
-                msgTimer = 1.3f;
+                if (score1 >= 5 || score2 >= 5) {
+                    state = WIN;
+                    winText.setString(score1 > score2 ?
+                        "GANO JUGADOR 1" : "GANO JUGADOR 2");
+                    sf::FloatRect w = winText.getGlobalBounds();
+                    winText.setOrigin(w.width / 2, w.height / 2);
+                    winText.setPosition(400.f, 260.f);
+                }
 
                 player1Turn = !player1Turn;
                 currentPlayer = player1Turn ? &p1 : &p2;
@@ -206,8 +250,7 @@ int main() {
 
             scoreText.setString(
                 "P1: " + std::to_string(score1) +
-                " | P2: " + std::to_string(score2)
-            );
+                "  |  P2: " + std::to_string(score2));
 
             window.draw(goal);
             window.draw(p1.sprite);
@@ -217,14 +260,17 @@ int main() {
             window.draw(scoreText);
         }
 
-        if (showMsg) {
-            msgTimer -= dt;
-            if (msgTimer <= 0.f)
-                showMsg = false;
-            else {
-                window.draw(msgBox);
-                window.draw(msgText);
-            }
+        if (showInfo) {
+            infoTimer -= dt;
+            if (infoTimer <= 0.f)
+                showInfo = false;
+            else
+                window.draw(infoText);
+        }
+
+        if (state == WIN) {
+            window.draw(winText);
+            window.draw(scoreText);
         }
 
         window.display();
