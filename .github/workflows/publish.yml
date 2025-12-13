@@ -1,0 +1,50 @@
+name: Publicar en Galería CETUS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: 🔢 Generar versión
+        id: version
+        run: |
+          VERSION="v1.0.${{ github.run_number }}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Versión generada: $VERSION"
+
+      - name: 📦 Empaquetar ejecutable
+        run: |
+          echo "Empaquetando bin/ y assets/ en un ZIP..."
+          mkdir -p release-package
+
+          if [ -d "bin" ]; then
+            cp -r bin/* release-package/ || true
+          fi
+
+          if [ -d "assets" ]; then
+            cp -r assets release-package/ || true
+          fi
+
+          cd release-package
+          zip -r ../juego-proyecto-252.zip .
+          cd ..
+
+      - name: 🚀 Crear Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          files: juego-proyecto-252.zip
