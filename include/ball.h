@@ -1,13 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-struct Ball {
+class Ball {
+public:
     sf::Sprite sprite;
-    sf::Vector2f velocity = {0.f, 0.f};   // ✔ Ahora sí está definido
+    sf::Texture texture;     // ✅ LA TEXTURA DEBE VIVIR AQUÍ
+    sf::Vector2f velocity;
 
-    bool isMoving = false;                // Saber si ya fue pateado
-
+    Ball();
+    void shoot(sf::Vector2f direction, float baseSpeed);
     void update(float dt);
-    void shoot(const sf::Vector2f& direction, float speed);  // ✔ Declarado aquí
-    sf::FloatRect getBounds() const;
 };

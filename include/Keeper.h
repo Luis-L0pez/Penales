@@ -1,16 +1,11 @@
-#pragma once 
+#pragma once
 #include <SFML/Graphics.hpp>
 
-struct Keeper {
+class Keeper {
+public:
     sf::Sprite sprite;
-    float speed = 200.f;
-    int direction = 0;
+    sf::Texture texture;   // ✅ LA TEXTURA VIVE AQUÍ
+    float speed = 120.f;
 
-    bool frozen = false;
-    float freezeDuration = 1.f;
-    sf::Clock freezeClock;
-
-    Keeper();              // <- declarar el constructor aquí
-    void update(float dt);
-    sf::FloatRect getBounds() const;
+    Keeper();
 };

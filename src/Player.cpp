@@ -1,33 +1,31 @@
-#include "../include/Player.h"
+#include "Player.h"
+#include <iostream>
 
-Player::Player(const std::string& n) {
-    name = n;
-
-    static sf::Texture texture;
+Player::Player(const std::string& name) : name(name) {
     if (!texture.loadFromFile("assets/player.png")) {
-        printf("No se pudo cargar player.png\n");
+        std::cerr << "Error: No se pudo cargar assets/player.png\n";
+        std::exit(EXIT_FAILURE);
     }
+
     sprite.setTexture(texture);
-
-    // Ajusta tamaño del sprite si está muy grande
-    sprite.setScale(0.5f, 0.5f);
-
-    // Posición inicial
-    sprite.setPosition(200, 400);
 }
 
 void Player::update(float dt) {
     float movement = 0.f;
 
-    if (moveLeft)  movement -= speed;
-    if (moveRight) movement += speed;
-
-    if (reversedControls)
-        movement *= -1;
+    if (moveLeft)
+        movement -= speed;
+    if (moveRight)
+        movement += speed;
 
     sprite.move(movement * dt, 0.f);
-}
 
-sf::FloatRect Player::getBounds() const {
-    return sprite.getGlobalBounds();
+    // Limitar dentro de la pantalla (800x600)
+    sf::Vector2f pos = sprite.getPosition();
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+
+    if (pos.x < 0.f)
+        sprite.setPosition(0.f, pos.y);
+    if (pos.x > 800.f - bounds.width)
+        sprite.setPosition(800.f - bounds.width, pos.y);
 }

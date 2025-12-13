@@ -2,33 +2,18 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-enum class PowerType {
-    None = 0,
-    SpeedBoost,
-    Curve,
-    FreezeKeeper,
-    ReverseControls
-};
-
-struct Power {
-    PowerType type = PowerType::None;
-    std::string name() const;
-};
-
-struct Player {
-    std::string name;
-
+class Player {
+public:
     sf::Sprite sprite;
+    sf::Texture texture;     // ✅ textura como miembro
     float speed = 220.f;
-    
-    bool reversedControls = false;
 
     bool moveLeft = false;
     bool moveRight = false;
 
-    Power currentPower;
-
-    Player(const std::string& n);
+    Player(const std::string& name);
     void update(float dt);
-    sf::FloatRect getBounds() const;
+
+private:
+    std::string name;
 };
